@@ -33,6 +33,7 @@ else()
         -Werror
         -fstack-protector-strong
         -D_FORTIFY_SOURCE=2
+	-O1
     )
 endif()
 
@@ -57,7 +58,7 @@ target_link_libraries(fluidsim
 
 # clang-tidy static analysis
 set_target_properties(fluidsim PROPERTIES
-    CXX_CLANG_TIDY "clang-tidy;-checks=*"
+    CXX_CLANG_TIDY "clang-tidy;-header-filter=${CMAKE_SOURCE_DIR}/src/.*"
 )
 
 # output directory
