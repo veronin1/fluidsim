@@ -11,6 +11,24 @@ add_executable(fluidsim
 
 target_include_directories(fluidsim PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
+target_compile_options(fluidsim PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wshadow
+    -Wformat=2
+    -Wconversion
+    -Wsign-conversion
+    -Wfloat-equal
+    -Wnull-dereference
+    -Wdouble-promotion
+    -Werror
+    -fsanitize=address,undefined
+    -fstack-protector-strong
+    -D_FORTIFY_SOURCE=2
+    -O1
+)
+
 find_package(OpenGL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
