@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # executable
 add_executable(fluidsim
     src/main.cpp
+    src/glad.c
 )
 
 # include directories
@@ -46,13 +47,11 @@ endif()
 # external libraries
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(glm REQUIRED)
 
 target_link_libraries(fluidsim
     PRIVATE OpenGL::GL
             glfw
-            GLEW::GLEW
             glm
 )
 
