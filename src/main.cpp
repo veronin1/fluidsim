@@ -27,6 +27,11 @@ class WindowConfig {
       : width(winWidth), height(winHeight), title(winTitle) {}
 };
 
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+  (void)window;
+  glViewport(0, 0, width, height);
+}
+
 int main() {
   if (glfwInit() == 0) {
     std::cerr << "Failed to initialise GLFW" << '\n';
@@ -58,4 +63,11 @@ int main() {
   }
 
   glViewport(0, 0, config.width, config.height);
+
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+  while (glfwWindowShouldClose(window) == 0) {
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
 }
