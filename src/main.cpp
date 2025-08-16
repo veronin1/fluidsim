@@ -3,10 +3,11 @@
 #include <GLFW/glfw3.h>
 
 #include <cstdint>
+#include <iostream>
 
 enum class Version : uint8_t {
   OPEN_GL_VERSION_MAJOR = 4,
-  OPEN_GL_VERSION_MINOR = 8
+  OPEN_GL_VERSION_MINOR = 6
 };
 
 class WindowConfig {
@@ -28,6 +29,7 @@ class WindowConfig {
 
 int main() {
   if (glfwInit() == 0) {
+    std::cerr << "Failed to initialise GLFW" << '\n';
     return -1;
   };
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
@@ -41,8 +43,19 @@ int main() {
   GLFWwindow *window = glfwCreateWindow(config.width, config.height,
                                         config.title, nullptr, nullptr);
   if (window == nullptr) {
+    std::cerr << "Failed to create GLFW window" << '\n';
     glfwTerminate();
     return -1;
   }
   glfwMakeContextCurrent(window);
+
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) ==
+      0) {
+    std::cerr << "Failed to initialise GLAD" << '\n';
+    glfwTerminate();
+    return -1;
+  }
+
+  glViewport(0, 0, config.width, config.height);
 }
