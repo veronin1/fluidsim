@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <iostream>
 
+void processInput(GLFWwindow *window);
+
 enum class Version : uint8_t {
   OPEN_GL_VERSION_MAJOR = 4,
   OPEN_GL_VERSION_MINOR = 6
@@ -33,6 +35,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 }
 
 int main() {
+  // initialise and configure
   if (glfwInit() == 0) {
     std::cerr << "Failed to initialise GLFW" << '\n';
     return -1;
@@ -43,6 +46,7 @@ int main() {
                  static_cast<int>(Version::OPEN_GL_VERSION_MINOR));
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  // create window with config(default)
   const WindowConfig config;
 
   GLFWwindow *window = glfwCreateWindow(config.width, config.height,
@@ -54,6 +58,7 @@ int main() {
   }
   glfwMakeContextCurrent(window);
 
+  // load opengl function pointer (GLAD)
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) ==
       0) {
@@ -66,11 +71,23 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+  // render loop
   while (glfwWindowShouldClose(window) == 0) {
+    processInput(window);
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
   glfwTerminate();
   return 0;
+}
+
+void processInput(GLFWwindow *window) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, 1);
+  }
 }
