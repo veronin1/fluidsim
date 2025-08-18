@@ -172,6 +172,13 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 
 void processInput(GLFWwindow *window);
 
+struct Colour {
+  float r, g, b, a;
+
+  Colour(float red, float green, float blue, float alpha)
+      : r(red), g(green), b(blue), a(alpha) {}
+};
+
 int main() {
   // initialise and configure
   if (glfwInit() == 0) {
@@ -216,11 +223,14 @@ int main() {
 
   RenderPipeline render(vertices);
 
+  const Colour windowColour{0.2F, 0.3F, 0.3F, 1.0F};
+
   // render loop
   while (glfwWindowShouldClose(window) == 0) {
     processInput(window);
 
-    glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
+    glClearColor(windowColour.r, windowColour.g, windowColour.b,
+                 windowColour.a);
     glClear(GL_COLOR_BUFFER_BIT);
 
     render.draw();
