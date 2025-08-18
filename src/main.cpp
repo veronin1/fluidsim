@@ -189,3 +189,20 @@ GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 
   return shaderProgram;
 }
+
+void linkVertexAttributes() {
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+}
+
+void virtualArrayObjeect() {
+  unsigned int VAO = 0;
+
+  glGenVertexArrays(1, &VAO);
+}
+
+void draw(GLuint shaderProgram, unsigned int VAO) {
+  glUseProgram(shaderProgram);
+  glBindVertexArray(VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+}
