@@ -25,13 +25,50 @@ const char *const fragmentShaderSource =
 
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
 
+class RenderPipeline {
+ public:
+  RenderPipeline(const std::array<float, 9> &vertices);
+  ~RenderPipeline();
+
+  void draw();
+
+ private:
+  GLuint VAO;
+  GLuint VBO;
+  GLuint shaderProgram;
+
+  GLuint createVertexShader();
+  GLuint createFragmentShader();
+  GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+  bool linkVertexAttributes();
+};
+
+RenderPipeline::RenderPipeline(const std::array<float, 9> &vertices) {
+  GLuint vertexShader = createVertexShader();
+  GLuint fragmentShader = createFragmentShader();
+  GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader);
+
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER,
+               static_cast<GLsizeiptr>(vertices.size() * sizeof(float)),
+               vertices.data(), GL_STATIC_DRAW);
+
+  if (linkVertexAttributes()) {
+    return;
+  }
+}
+
 void processInput(GLFWwindow *window);
 GLuint createVertexShader();
 GLuint createFragmentShader();
 GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
 GLuint createVertexArrayObject();
 GLuint createVertexBufferObject(std::array<float, 9> vertices);
-void linkVertexAttributes();
+bool linkVertexAttributes();
 void draw(GLuint shaderProgram, unsigned int VAO);
 
 enum class Version : uint8_t {
@@ -121,6 +158,7 @@ int main() {
     glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    draw(shaderProgram, VAO);
     draw(shaderProgram, VAO);
 
     glfwSwapBuffers(window);
@@ -217,9 +255,10 @@ GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
   return shaderProgram;
 }
 
-void linkVertexAttributes() {
+bool linkVertexAttributes() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
+  return true;
 }
 
 GLuint createVertexArrayObject() {
