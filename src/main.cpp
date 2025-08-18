@@ -183,5 +183,9 @@ GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
               << infoLog.data() << '\n';
     return 0;
   }
+
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
   return shaderProgram;
 }
