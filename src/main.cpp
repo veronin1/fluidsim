@@ -14,6 +14,15 @@ const char *const vertexShaderSource =
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
+const char *const fragmentShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "\n"
+    "void main()\n"
+    "{\n"
+    "    FragColor = vec4(1.0f, 0.5f, 1.0f, 1.0f);\n"
+    "}\n";
+
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
 
 void processInput(GLFWwindow *window);
@@ -132,6 +141,23 @@ void createVertexShader() {
     glGetShaderInfoLog(vertexShader, SHADER_INFO_LOG_SIZE, nullptr,
                        infoLog.data());
     std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+              << infoLog.data() << '\n';
+  }
+}
+
+void createFragmentShader() {
+  GLuint fragmentShader = 0;
+
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+  glCompileShader(fragmentShader);
+  int success = 0;
+  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+  if (success == 0) {
+    glGetShaderInfoLog(fragmentShader, SHADER_INFO_LOG_SIZE, nullptr,
+                       infoLog.data());
+    std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
               << infoLog.data() << '\n';
   }
 }
