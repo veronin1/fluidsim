@@ -37,7 +37,7 @@ class RenderPipeline {
   GLuint VBO;
   GLuint shaderProgram;
 
-  GLuint createVertexShader();
+  static GLuint createVertexShader();
   GLuint createFragmentShader();
   GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
   bool linkVertexAttributes();
@@ -60,6 +60,27 @@ RenderPipeline::RenderPipeline(const std::array<float, 9> &vertices) {
   if (linkVertexAttributes()) {
     return;
   }
+}
+
+GLuint RenderPipeline::createVertexShader() {
+  GLuint vertexShader = 0;
+
+  vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+  glCompileShader(vertexShader);
+
+  int success = 0;
+  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+  if (success != GL_TRUE) {
+    glGetShaderInfoLog(vertexShader, SHADER_INFO_LOG_SIZE, nullptr,
+                       infoLog.data());
+    std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+              << infoLog.data() << '\n';
+    return 0;
+  }
+  return vertexShader;
 }
 
 void processInput(GLFWwindow *window);
