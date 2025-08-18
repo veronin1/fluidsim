@@ -38,7 +38,7 @@ class RenderPipeline {
   GLuint shaderProgram;
 
   static GLuint createVertexShader();
-  GLuint createFragmentShader();
+  static GLuint createFragmentShader();
   GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
   bool linkVertexAttributes();
 };
@@ -81,6 +81,26 @@ GLuint RenderPipeline::createVertexShader() {
     return 0;
   }
   return vertexShader;
+}
+
+GLuint RenderPipeline::createFragmentShader() {
+  GLuint fragmentShader = 0;
+
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+  glCompileShader(fragmentShader);
+  int success = 0;
+  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+  if (success != GL_TRUE) {
+    glGetShaderInfoLog(fragmentShader, SHADER_INFO_LOG_SIZE, nullptr,
+                       infoLog.data());
+    std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
+              << infoLog.data() << '\n';
+    return 0;
+  }
+  return fragmentShader;
+}
 }
 
 void processInput(GLFWwindow *window);
@@ -210,46 +230,6 @@ unsigned int createVertexBufferObject(std::array<float, 9> vertices) {
                GL_STATIC_DRAW);
 
   return VBO;
-}
-
-GLuint createVertexShader() {
-  GLuint vertexShader = 0;
-
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-  glCompileShader(vertexShader);
-
-  int success = 0;
-  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-  if (success != GL_TRUE) {
-    glGetShaderInfoLog(vertexShader, SHADER_INFO_LOG_SIZE, nullptr,
-                       infoLog.data());
-    std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog.data() << '\n';
-    return 0;
-  }
-  return vertexShader;
-}
-
-GLuint createFragmentShader() {
-  GLuint fragmentShader = 0;
-
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-  glCompileShader(fragmentShader);
-  int success = 0;
-  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (success != GL_TRUE) {
-    glGetShaderInfoLog(fragmentShader, SHADER_INFO_LOG_SIZE, nullptr,
-                       infoLog.data());
-    std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog.data() << '\n';
-    return 0;
-  }
-  return fragmentShader;
 }
 
 GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
