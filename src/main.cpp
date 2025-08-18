@@ -20,12 +20,19 @@ const char *const fragmentShaderSource =
     "\n"
     "void main()\n"
     "{\n"
-    "    FragColor = vec4(1.0f, 0.5f, 1.0f, 1.0f);\n"
+    "    FragColor = vec4(0.47f, 0.27f, 0.035f, 1.0f);\n"
     "}\n";
 
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
 
 void processInput(GLFWwindow *window);
+GLuint createVertexShader();
+GLuint createFragmentShader();
+GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+GLuint createVertexArrayObject();
+GLuint createVertexBufferObject(std::array<float, 9> vertices);
+void linkVertexAttributes();
+void draw(GLuint shaderProgram, unsigned int VAO);
 
 enum class Version : uint8_t {
   OPEN_GL_VERSION_MAJOR = 4,
@@ -91,6 +98,22 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+  // create shaders
+
+  const GLuint vertexShader = createVertexShader();
+  const GLuint fragmentShader = createFragmentShader();
+  const GLuint shaderProgram =
+      createShaderProgram(vertexShader, fragmentShader);
+
+  // triangle vertices
+  const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
+                                         0.0F,  0.0F,  0.5F, 0.0F};
+
+  // create VAO + VBO
+  GLuint VAO = createVertexArrayObject();
+  GLuint VBO = createVertexBufferObject(vertices);
+  linkVertexAttributes();
+
   // render loop
   while (glfwWindowShouldClose(window) == 0) {
     processInput(window);
@@ -98,10 +121,15 @@ int main() {
     glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    draw(shaderProgram, VAO);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteProgram(shaderProgram);
   glfwTerminate();
   return 0;
 }
@@ -112,10 +140,7 @@ void processInput(GLFWwindow *window) {
   }
 }
 
-const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
-                                       0.0F,  0.0F,  0.5F, 0.0F};
-
-void vertex_buffer_object() {
+unsigned int createVertexBufferObject(std::array<float, 9> vertices) {
   unsigned int VBO = 0;
 
   glGenBuffers(1, &VBO);
@@ -124,6 +149,8 @@ void vertex_buffer_object() {
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
                GL_STATIC_DRAW);
+
+  return VBO;
 }
 
 GLuint createVertexShader() {
@@ -195,10 +222,11 @@ void linkVertexAttributes() {
   glEnableVertexAttribArray(0);
 }
 
-void virtualArrayObjeect() {
-  unsigned int VAO = 0;
-
+GLuint createVertexArrayObject() {
+  GLuint VAO = 0;
   glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+  return VAO;
 }
 
 void draw(GLuint shaderProgram, unsigned int VAO) {
