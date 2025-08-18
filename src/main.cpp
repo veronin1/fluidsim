@@ -48,8 +48,8 @@ class RenderPipeline {
 };
 
 RenderPipeline::RenderPipeline(const std::array<float, 9> &vertices) {
-  GLuint vertexShader = createVertexShader();
-  GLuint fragmentShader = createFragmentShader();
+  const GLuint vertexShader = createVertexShader();
+  const GLuint fragmentShader = createFragmentShader();
   shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
   glGenVertexArrays(1, &VAO);
@@ -118,7 +118,7 @@ GLuint RenderPipeline::createFragmentShader() {
 
 GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
                                            GLuint fragmentShader) {
-  GLuint program = glCreateProgram();
+  const GLuint program = glCreateProgram();
   glAttachShader(program, vertexShader);
   glAttachShader(program, fragmentShader);
   glLinkProgram(program);
@@ -221,7 +221,7 @@ int main() {
   const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
                                          0.0F,  0.0F,  0.5F, 0.0F};
 
-  RenderPipeline render(vertices);
+  const RenderPipeline render(vertices);
 
   const Colour windowColour{0.2F, 0.3F, 0.3F, 1.0F};
 
