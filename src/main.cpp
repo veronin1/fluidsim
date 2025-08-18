@@ -137,11 +137,12 @@ GLuint createVertexShader() {
   std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 
-  if (success == 0) {
+  if (success != GL_TRUE) {
     glGetShaderInfoLog(vertexShader, SHADER_INFO_LOG_SIZE, nullptr,
                        infoLog.data());
     std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
               << infoLog.data() << '\n';
+    return 0;
   }
   return vertexShader;
 }
@@ -155,11 +156,12 @@ GLuint createFragmentShader() {
   int success = 0;
   std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
+  if (success != GL_TRUE) {
     glGetShaderInfoLog(fragmentShader, SHADER_INFO_LOG_SIZE, nullptr,
                        infoLog.data());
     std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
               << infoLog.data() << '\n';
+    return 0;
   }
   return fragmentShader;
 }
@@ -174,7 +176,7 @@ GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
   int success = 0;
   std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (success == 0) {
+  if (success != GL_TRUE) {
     glGetProgramInfoLog(shaderProgram, SHADER_INFO_LOG_SIZE, nullptr,
                         infoLog.data());
     std::cerr << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
