@@ -6,6 +6,16 @@
 #include <cstdint>
 #include <iostream>
 
+const char *const vertexShaderSource =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+constexpr size_t SHADER_INFO_LOG_SIZE = 512;
+
 void processInput(GLFWwindow *window);
 
 enum class Version : uint8_t {
@@ -105,4 +115,23 @@ void vertex_buffer_object() {
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
                GL_STATIC_DRAW);
+}
+
+void createVertexShader() {
+  GLuint vertexShader = 0;
+
+  vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+  glCompileShader(vertexShader);
+
+  int success = 0;
+  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+  if (success == 0) {
+    glGetShaderInfoLog(vertexShader, SHADER_INFO_LOG_SIZE, nullptr,
+                       infoLog.data());
+    std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+              << infoLog.data() << '\n';
+  }
 }
