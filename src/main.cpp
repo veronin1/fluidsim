@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <array>
 #include <cstdint>
 #include <iostream>
 
@@ -75,7 +76,7 @@ int main() {
   while (glfwWindowShouldClose(window) == 0) {
     processInput(window);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glfwSwapBuffers(window);
@@ -90,4 +91,16 @@ void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, 1);
   }
+}
+
+float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
+
+void vertex_buffer_object() {
+  unsigned int VBO = 0;
+
+  glGenBuffers(1, &VBO);
+
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 }
