@@ -93,7 +93,8 @@ void processInput(GLFWwindow *window) {
   }
 }
 
-float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
+const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
+                                       0.0F,  0.0F,  0.5F, 0.0F};
 
 void vertex_buffer_object() {
   unsigned int VBO = 0;
@@ -102,5 +103,6 @@ void vertex_buffer_object() {
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
+               GL_STATIC_DRAW);
 }
