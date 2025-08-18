@@ -27,26 +27,30 @@ constexpr size_t SHADER_INFO_LOG_SIZE = 512;
 
 class RenderPipeline {
  public:
-  RenderPipeline(const std::array<float, 9> &vertices);
+  RenderPipeline(const RenderPipeline &) = default;
+  RenderPipeline(RenderPipeline &&) = delete;
+  RenderPipeline &operator=(const RenderPipeline &) = default;
+  RenderPipeline &operator=(RenderPipeline &&) = delete;
+  explicit RenderPipeline(const std::array<float, 9> &vertices);
   ~RenderPipeline();
 
-  void draw();
+  void draw() const;
 
  private:
-  GLuint VAO;
-  GLuint VBO;
+  GLuint VAO{};
+  GLuint VBO{};
   GLuint shaderProgram;
 
   static GLuint createVertexShader();
   static GLuint createFragmentShader();
-  GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
-  bool linkVertexAttributes();
+  static GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+  static void linkVertexAttributes();
 };
 
 RenderPipeline::RenderPipeline(const std::array<float, 9> &vertices) {
   GLuint vertexShader = createVertexShader();
   GLuint fragmentShader = createFragmentShader();
-  GLuint shaderProgram = createShaderProgram(vertexShader, fragmentShader);
+  shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
@@ -57,9 +61,19 @@ RenderPipeline::RenderPipeline(const std::array<float, 9> &vertices) {
                static_cast<GLsizeiptr>(vertices.size() * sizeof(float)),
                vertices.data(), GL_STATIC_DRAW);
 
-  if (linkVertexAttributes()) {
-    return;
-  }
+  linkVertexAttributes();
+}
+
+RenderPipeline::~RenderPipeline() {
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteProgram(shaderProgram);
+}
+
+void RenderPipeline::draw() const {
+  glUseProgram(shaderProgram);
+  glBindVertexArray(VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 GLuint RenderPipeline::createVertexShader() {
@@ -101,16 +115,33 @@ GLuint RenderPipeline::createFragmentShader() {
   }
   return fragmentShader;
 }
+
+GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
+                                           GLuint fragmentShader) {
+  GLuint program = glCreateProgram();
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
+  glLinkProgram(program);
+
+  int success = 0;
+  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
+  glGetProgramiv(program, GL_LINK_STATUS, &success);
+  if (success != GL_TRUE) {
+    glGetProgramInfoLog(program, SHADER_INFO_LOG_SIZE, nullptr, infoLog.data());
+    std::cerr << "ERROR::SHADER_PROGRAM::LINK_FAILED\n"
+              << infoLog.data() << '\n';
+  }
+
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
+  return program;
 }
 
-void processInput(GLFWwindow *window);
-GLuint createVertexShader();
-GLuint createFragmentShader();
-GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
-GLuint createVertexArrayObject();
-GLuint createVertexBufferObject(std::array<float, 9> vertices);
-bool linkVertexAttributes();
-void draw(GLuint shaderProgram, unsigned int VAO);
+void RenderPipeline::linkVertexAttributes() {
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+  glEnableVertexAttribArray(0);
+}
 
 enum class Version : uint8_t {
   OPEN_GL_VERSION_MAJOR = 4,
@@ -138,6 +169,8 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   (void)window;
   glViewport(0, 0, width, height);
 }
+
+void processInput(GLFWwindow *window);
 
 int main() {
   // initialise and configure
@@ -177,20 +210,11 @@ int main() {
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   // create shaders
-
-  const GLuint vertexShader = createVertexShader();
-  const GLuint fragmentShader = createFragmentShader();
-  const GLuint shaderProgram =
-      createShaderProgram(vertexShader, fragmentShader);
-
   // triangle vertices
   const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
                                          0.0F,  0.0F,  0.5F, 0.0F};
 
-  // create VAO + VBO
-  GLuint VAO = createVertexArrayObject();
-  GLuint VBO = createVertexBufferObject(vertices);
-  linkVertexAttributes();
+  RenderPipeline render(vertices);
 
   // render loop
   while (glfwWindowShouldClose(window) == 0) {
@@ -199,16 +223,12 @@ int main() {
     glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    draw(shaderProgram, VAO);
-    draw(shaderProgram, VAO);
+    render.draw();
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderProgram);
   glfwTerminate();
   return 0;
 }
@@ -217,60 +237,4 @@ void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, 1);
   }
-}
-
-unsigned int createVertexBufferObject(std::array<float, 9> vertices) {
-  unsigned int VBO = 0;
-
-  glGenBuffers(1, &VBO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(),
-               GL_STATIC_DRAW);
-
-  return VBO;
-}
-
-GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
-  GLuint shaderProgram = 0;
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-
-  int success = 0;
-  std::array<char, SHADER_INFO_LOG_SIZE> infoLog = {0};
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (success != GL_TRUE) {
-    glGetProgramInfoLog(shaderProgram, SHADER_INFO_LOG_SIZE, nullptr,
-                        infoLog.data());
-    std::cerr << "ERROR::SHADER::PROGRAM::LINK_FAILED\n"
-              << infoLog.data() << '\n';
-    return 0;
-  }
-
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-
-  return shaderProgram;
-}
-
-bool linkVertexAttributes() {
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-  glEnableVertexAttribArray(0);
-  return true;
-}
-
-GLuint createVertexArrayObject() {
-  GLuint VAO = 0;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-  return VAO;
-}
-
-void draw(GLuint shaderProgram, unsigned int VAO) {
-  glUseProgram(shaderProgram);
-  glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
 }
