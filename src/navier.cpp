@@ -74,16 +74,16 @@ void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
 
 Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
                           const Vec3& pos) {
-  float x0 = NAN;
-  float y0 = NAN;
-  float z0 = NAN;
-  float x1 = NAN;
-  float y1 = NAN;
-  float z1 = NAN;
+  int x0 = -1;
+  int y0 = -1;
+  int z0 = -1;
+  int x1 = -1;
+  int y1 = -1;
+  int z1 = -1;
 
-  x0 = std::floor(pos.x), x1 = x0 + 1;
-  y0 = std::floor(pos.y), y1 = y0 + 1;
-  z0 = std::floor(pos.z), z1 = z0 + 1;
+  x0 = static_cast<int>(std::floor(pos.x)), x1 = x0 + 1;
+  y0 = static_cast<int>(std::floor(pos.y)), y1 = y0 + 1;
+  z0 = static_cast<int>(std::floor(pos.z)), z1 = z0 + 1;
 
   float u = NAN;
   float v = NAN;
@@ -93,12 +93,16 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
   v = pos.y - y0;
   w = pos.z - z0;
 
-  float f000 = NAN;
-  float f100 = NAN;
-  float f010 = NAN;
-  float f110 = NAN;
-  float f001 = NAN;
-  float f101 = NAN;
-  float f011 = NAN;
-  float f111 = NAN;
+  Vec3 f000;
+  Vec3 f100;
+  Vec3 f010;
+  Vec3 f110;
+  Vec3 f001;
+  Vec3 f101;
+  Vec3 f011;
+  Vec3 f111;
+
+  f000 = field[grid.idx(x0, y0, z0)];
+  f100 = field[x1, y0, z0];
+  f010 = field[x0, y1, z0];
 }
