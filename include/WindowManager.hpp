@@ -1,6 +1,8 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <string>
+
+struct GLFWwindow;
 
 class WindowConfig;
 
@@ -16,7 +18,7 @@ class WindowManager {
 
  private:
   int width, height;
-  const char *title = nullptr;
+  std::string title;
   GLFWwindow *window = nullptr;
 
   static void frameBufferSizeCallback(GLFWwindow *window, int width,

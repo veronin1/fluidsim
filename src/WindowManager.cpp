@@ -20,7 +20,7 @@ WindowManager::WindowManager(const WindowConfig& config)
                  static_cast<int>(OpenGLVersion::VERSION_MINOR));
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   if (window == nullptr) {
     glfwTerminate();
     throw std::runtime_error("Failed to create GLFW window");
@@ -54,3 +54,9 @@ void WindowManager::swapBuffers() { glfwSwapBuffers(window); }
 void WindowManager::pollEvents() { glfwPollEvents(); }
 
 GLFWwindow* WindowManager::getGLFWwindow() { return glfwGetCurrentContext(); }
+
+void WindowManager::frameBufferSizeCallback(GLFWwindow* window, int width,
+                                            int height) {
+  (void)window;
+  glViewport(0, 0, width, height);
+}
