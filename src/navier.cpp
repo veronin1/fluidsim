@@ -42,9 +42,9 @@ int navier() {
 }
 
 // apply gravity (testing)
-void applyForces(Grid3D& grid, float timeStep, Liquid& fluid) {
-  for (size_t i = 0; i < grid.nx * grid.ny * grid.nx; ++i) {
-    fluid.velocity[i].z += GRAVITY_FORCE_EARTH_M_PER_S2 * timeStep;
+void applyForces(float timeStep, Liquid& fluid) {
+  for (auto& vel : fluid.velocity) {
+    vel.z += GRAVITY_FORCE_EARTH_M_PER_S2 * timeStep;
   }
 }
 
