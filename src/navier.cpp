@@ -2,8 +2,6 @@
 #include <cstddef>
 #include <vector>
 
-using std::vector;
-
 constexpr size_t gridSizeX = 100;
 constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
@@ -24,23 +22,27 @@ struct Vec3 {
   float x = 0.0f, y = 0.0f, z = 0.0f;
 };
 
-vector<Vec3> velocity(gridSizeX* gridSizeY* gridSizeZ);
-vector<float> density(gridSizeX* gridSizeY* gridSizeZ);
-vector<float> pressure(gridSizeX* gridSizeY* gridSizeZ);
+struct Liquid {
+  std::vector<Vec3> velocity;
+  std::vector<float> density;
+  std::vector<float> pressure;
+};
 
 int navier() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
 
+  std::vector<Vec3> velocity(gridSizeX * gridSizeY * gridSizeZ);
+  std::vector<float> density(gridSizeX * gridSizeY * gridSizeZ);
+  std::vector<float> pressure(gridSizeX * gridSizeY * gridSizeZ);
+
   // set density to water density (non-changing)
   std::fill(density.begin(), density.end(), DENSITY_WATER_KG_PER_M3);
-
-  // set pressure equal to earth gravity
-  std::fill(pressure.begin(), pressure.end(), GRAVITY_FORCE_EARTH_M_PER_S2);
 
   return 0;
 }
 
-void applyForces(Grid3D& grid, float timeStep) {
+// apply gravity (testing)
+void applyForces(Grid3D& grid, float timeStep, std::vector<Vec3>& velocity) {
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
@@ -50,3 +52,5 @@ void applyForces(Grid3D& grid, float timeStep) {
     }
   }
 }
+
+void advection(Grid3D& grid, float timeStep,
