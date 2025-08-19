@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <vector>
 
@@ -48,7 +49,7 @@ void applyForces(float timeStep, Liquid& fluid) {
   }
 }
 
-void advection(Grid3D& grid, Liquid& fluid, float timeStep) {
+void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
   const Liquid& fluidPrev = fluid;
   constexpr float CELL_CENTER_OFFSET = 0.5F;
 
@@ -60,15 +61,29 @@ void advection(Grid3D& grid, Liquid& fluid, float timeStep) {
                             static_cast<float>(y) + CELL_CENTER_OFFSET,
                             static_cast<float>(z) + CELL_CENTER_OFFSET};
 
-        Vec3 prev = {currentCell.x - (fluidPrev.velocity[index].x * timeStep),
-                     currentCell.y - (fluidPrev.velocity[index].y * timeStep),
-                     currentCell.z - (fluidPrev.velocity[index].z * timeStep)};
-
-        Vec3 interpolatedVelocity = {prev.x - };
+        Vec3 prevPos = {
+            currentCell.x - (fluidPrev.velocity[index].x * timeStep),
+            currentCell.y - (fluidPrev.velocity[index].y * timeStep),
+            currentCell.z - (fluidPrev.velocity[index].z * timeStep)};
       }
     }
   }
 }
 
-float trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
-                           const Vec3& pos) {}
+Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
+                          const Vec3& pos) {
+  float x0;
+  float y0;
+  float z0;
+  float x1;
+  float y1;
+  float z1;
+
+  x0 = std::floor(pos.x), x1 = x0 + 1;
+  y0 = std::floor(pos.y), y1 = y0 + 1;
+  z0 = std::floor(pos.z), z1 = z0 + 1;
+
+  float u;
+  float v;
+  float w;
+}
