@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -72,18 +74,31 @@ void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
 
 Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
                           const Vec3& pos) {
-  float x0;
-  float y0;
-  float z0;
-  float x1;
-  float y1;
-  float z1;
+  float x0 = NAN;
+  float y0 = NAN;
+  float z0 = NAN;
+  float x1 = NAN;
+  float y1 = NAN;
+  float z1 = NAN;
 
   x0 = std::floor(pos.x), x1 = x0 + 1;
   y0 = std::floor(pos.y), y1 = y0 + 1;
   z0 = std::floor(pos.z), z1 = z0 + 1;
 
-  float u;
-  float v;
-  float w;
+  float u = NAN;
+  float v = NAN;
+  float w = NAN;
+
+  u = pos.x - x0;
+  v = pos.y - y0;
+  w = pos.z - z0;
+
+  float f000 = NAN;
+  float f100 = NAN;
+  float f010 = NAN;
+  float f110 = NAN;
+  float f001 = NAN;
+  float f101 = NAN;
+  float f011 = NAN;
+  float f111 = NAN;
 }
