@@ -143,10 +143,7 @@ void RenderPipeline::linkVertexAttributes() {
   glEnableVertexAttribArray(0);
 }
 
-enum class Version : uint8_t {
-  OPEN_GL_VERSION_MAJOR = 4,
-  OPEN_GL_VERSION_MINOR = 6
-};
+enum class OpenGLVersion : uint8_t { VERSION_MAJOR = 4, VERSION_MINOR = 6 };
 
 class WindowConfig {
  public:
@@ -179,44 +176,73 @@ struct Colour {
       : r(red), g(green), b(blue), a(alpha) {}
 };
 
+class WindowManager {
+ public:
+  WindowManager(const WindowManager &) = default;
+  WindowManager(WindowManager &&) = delete;
+  WindowManager &operator=(const WindowManager &) = default;
+  WindowManager &operator=(WindowManager &&) = delete;
+  explicit WindowManager(const WindowConfig &config)
+      : width(config.width), height(config.height), title(config.title) {
+    if (glfwInit() == 0) {
+      throw std::runtime_error("Failed to initialize GLFW\n");
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
+                   static_cast<int>(OpenGLVersion::VERSION_MAJOR));
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
+                   static_cast<int>(OpenGLVersion::VERSION_MINOR));
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    if (window == nullptr) {
+      glfwTerminate();
+      throw std::runtime_error("Failed to create GLFW window\n");
+    }
+
+    glfwMakeContextCurrent(window);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) ==
+        0) {
+      glfwTerminate();
+      throw std::runtime_error("Failed to initialise GLAD\n");
+    }
+    glViewport(0, 0, config.width, config.height);
+
+    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+  }
+
+  ~WindowManager() {
+    if (window != nullptr) {
+      glfwDestroyWindow(window);
+    }
+    glfwTerminate();
+  }
+
+  [[nodiscard]] bool shouldClose() const {
+    return glfwWindowShouldClose(window) != 0;
+  }
+  void swapBuffers() { glfwSwapBuffers(window); }
+  static void pollEvents() { glfwPollEvents(); }
+
+  static GLFWwindow *getGLFWwindow() { return glfwGetCurrentContext(); }
+
+ private:
+  int width, height;
+  const char *title = nullptr;
+  GLFWwindow *window = nullptr;
+
+  static void frameBufferSizeCallback(GLFWwindow *window, int width,
+                                      int height) {
+    (void)window;
+    glViewport(0, 0, width, height);
+  }
+};
+
 int main() {
-  // initialise and configure
-  if (glfwInit() == 0) {
-    std::cerr << "Failed to initialise GLFW" << '\n';
-    return -1;
-  };
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
-                 static_cast<int>(Version::OPEN_GL_VERSION_MAJOR));
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
-                 static_cast<int>(Version::OPEN_GL_VERSION_MINOR));
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  const WindowConfig config{1024, 768, "My Fluid Simulator"};
+  WindowManager window(config);
 
-  // create window with config(default)
-  const WindowConfig config;
-
-  GLFWwindow *window = glfwCreateWindow(config.width, config.height,
-                                        config.title, nullptr, nullptr);
-  if (window == nullptr) {
-    std::cerr << "Failed to create GLFW window" << '\n';
-    glfwTerminate();
-    return -1;
-  }
-  glfwMakeContextCurrent(window);
-
-  // load opengl function pointer (GLAD)
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) ==
-      0) {
-    std::cerr << "Failed to initialise GLAD" << '\n';
-    glfwTerminate();
-    return -1;
-  }
-
-  glViewport(0, 0, config.width, config.height);
-
-  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-  // create shaders
   // triangle vertices
   const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
                                          0.0F,  0.0F,  0.5F, 0.0F};
@@ -226,8 +252,8 @@ int main() {
   const Colour windowColour{0.2F, 0.3F, 0.3F, 1.0F};
 
   // render loop
-  while (glfwWindowShouldClose(window) == 0) {
-    processInput(window);
+  while (!window.shouldClose()) {
+    processInput(WindowManager::getGLFWwindow());
 
     glClearColor(windowColour.r, windowColour.g, windowColour.b,
                  windowColour.a);
@@ -235,8 +261,8 @@ int main() {
 
     render.draw();
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    window.swapBuffers();
+    WindowManager::pollEvents();
   }
 
   glfwTerminate();
