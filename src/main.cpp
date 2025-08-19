@@ -2,8 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
+#include "WindowConfig.hpp"
+#include "WindowManager.hpp"
+#include "colour.hpp"
 #include <array>
-#include <cstdint>
 #include <iostream>
 
 const char *const vertexShaderSource =
@@ -143,101 +145,7 @@ void RenderPipeline::linkVertexAttributes() {
   glEnableVertexAttribArray(0);
 }
 
-enum class OpenGLVersion : uint8_t { VERSION_MAJOR = 4, VERSION_MINOR = 6 };
-
-class WindowConfig {
- public:
-  static constexpr int DEFAULT_WIDTH = 800;
-  static constexpr int DEFAULT_HEIGHT = 600;
-  static constexpr const char *DEFAULT_TITLE = "fluidsim";
-
-  int width;
-  int height;
-  const char *title;
-
-  WindowConfig()
-      : width(DEFAULT_WIDTH), height(DEFAULT_HEIGHT), title(DEFAULT_TITLE) {}
-
-  WindowConfig(int winWidth, int winHeight, const char *winTitle)
-      : width(winWidth), height(winHeight), title(winTitle) {}
-};
-
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-  (void)window;
-  glViewport(0, 0, width, height);
-}
-
 void processInput(GLFWwindow *window);
-
-struct Colour {
-  float r, g, b, a;
-
-  Colour(float red, float green, float blue, float alpha)
-      : r(red), g(green), b(blue), a(alpha) {}
-};
-
-class WindowManager {
- public:
-  WindowManager(const WindowManager &) = default;
-  WindowManager(WindowManager &&) = delete;
-  WindowManager &operator=(const WindowManager &) = default;
-  WindowManager &operator=(WindowManager &&) = delete;
-  explicit WindowManager(const WindowConfig &config)
-      : width(config.width), height(config.height), title(config.title) {
-    if (glfwInit() == 0) {
-      throw std::runtime_error("Failed to initialize GLFW\n");
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,
-                   static_cast<int>(OpenGLVersion::VERSION_MAJOR));
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
-                   static_cast<int>(OpenGLVersion::VERSION_MINOR));
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    if (window == nullptr) {
-      glfwTerminate();
-      throw std::runtime_error("Failed to create GLFW window\n");
-    }
-
-    glfwMakeContextCurrent(window);
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) ==
-        0) {
-      glfwTerminate();
-      throw std::runtime_error("Failed to initialise GLAD\n");
-    }
-    glViewport(0, 0, config.width, config.height);
-
-    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
-  }
-
-  ~WindowManager() {
-    if (window != nullptr) {
-      glfwDestroyWindow(window);
-    }
-    glfwTerminate();
-  }
-
-  [[nodiscard]] bool shouldClose() const {
-    return glfwWindowShouldClose(window) != 0;
-  }
-  void swapBuffers() { glfwSwapBuffers(window); }
-  static void pollEvents() { glfwPollEvents(); }
-
-  static GLFWwindow *getGLFWwindow() { return glfwGetCurrentContext(); }
-
- private:
-  int width, height;
-  const char *title = nullptr;
-  GLFWwindow *window = nullptr;
-
-  static void frameBufferSizeCallback(GLFWwindow *window, int width,
-                                      int height) {
-    (void)window;
-    glViewport(0, 0, width, height);
-  }
-};
 
 int main() {
   const WindowConfig config{1024, 768, "My Fluid Simulator"};
