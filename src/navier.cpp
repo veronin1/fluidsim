@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <vector>
 
+using std::vector;
+
 constexpr int gridSizeX = 100;
 constexpr int gridSizeY = 100;
 constexpr int gridSizeZ = 50;
@@ -22,8 +24,7 @@ struct Vec3 {
   float x, y, z;
 };
 
-std::vector<Vec3> velocity(
-    static_cast<size_t>(gridSizeX* gridSizeY* gridSizeZ));
+vector<Vec3> velocity(static_cast<size_t>(gridSizeX* gridSizeY* gridSizeZ));
 std::vector<float> density(
     static_cast<size_t>(gridSizeX* gridSizeY* gridSizeZ));
 std::vector<float> pressure(
