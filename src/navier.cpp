@@ -122,4 +122,14 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
   f10 = f010 * (1 - u) + f110 * u;
   f01 = f001 * (1 - u) + f101 * u;
   f11 = f011 * (1 - u) + f111 * u;
+
+  Vec3 f0;
+  Vec3 f1;
+
+  f0 = f00 * (1 - v) + f10 * v;
+  f1 = f01 * (1 - v) + f11 * v;
+
+  Vec3 last;
+  last = f0 * (1 - w) + f1 * w;
+  return last;
 }
