@@ -50,6 +50,9 @@ void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
             currentCell.x - (fluidPrev.velocity[index].x * timeStep),
             currentCell.y - (fluidPrev.velocity[index].y * timeStep),
             currentCell.z - (fluidPrev.velocity[index].z * timeStep)};
+
+        fluid.velocity[index] =
+            trilinearInterpolate(grid, fluidPrev.velocity, prevPos);
       }
     }
   }
@@ -96,5 +99,5 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
 }
 
 Vec3 linearInterpolate(const Vec3& a, const Vec3& b, float t) {
-  return a * b(1 - t) + b * t;
+  return a * (1 - t) + b * t;
 }
