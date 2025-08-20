@@ -19,10 +19,8 @@ struct Vec3 {
     return {x + other.x, y + other.y, z + other.z};
   }
 
-  // vec3 * vec3
-  Vec3 operator*(const Vec3& other) const {
-    return {x * other.x, y * other.y, z * other.y};
-  }
+  // vec3 * scalar (s)
+  Vec3 operator*(const float s) const { return {x * s, y * s, z * s}; }
 };
 
 struct Liquid {
