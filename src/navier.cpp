@@ -35,7 +35,7 @@ void applyForces(float timeStep, Liquid& fluid) {
 }
 
 void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
-  const Liquid& fluidPrev = fluid;
+  Liquid& fluidPrev = fluid;
   constexpr float CELL_CENTER_OFFSET = 0.5F;
 
   for (size_t z = 0; z < grid.nz; ++z) {
@@ -56,7 +56,7 @@ void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
 }
 
 void advectDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
-  const Liquid& fluidPrev = fluid;
+  Liquid& fluidPrev = fluid;
   constexpr float CELL_CENTER_OFFSET = 0.5F;
 
   for (size_t z = 0; z < grid.nz; ++z) {
