@@ -68,31 +68,18 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
   y0 = static_cast<int>(std::floor(pos.y)), y1 = y0 + 1;
   z0 = static_cast<int>(std::floor(pos.z)), z1 = z0 + 1;
 
-  float u = NAN;
-  float v = NAN;
-  float w = NAN;
+  float u = pos.x - x0;
+  float v = pos.y - y0;
+  float w = pos.z - z0;
 
-  u = pos.x - x0;
-  v = pos.y - y0;
-  w = pos.z - z0;
-
-  Vec3 f000;
-  Vec3 f100;
-  Vec3 f010;
-  Vec3 f110;
-  Vec3 f001;
-  Vec3 f101;
-  Vec3 f011;
-  Vec3 f111;
-
-  f000 = field[grid.idx(x0, y0, z0)];
-  f100 = field[grid.idx(x1, y0, z0)];
-  f010 = field[grid.idx(x0, y1, z0)];
-  f110 = field[grid.idx(x1, y1, z0)];
-  f001 = field[grid.idx(x0, y0, z1)];
-  f101 = field[grid.idx(x1, y0, z1)];
-  f011 = field[grid.idx(x0, y1, z1)];
-  f111 = field[grid.idx(x1, y1, z1)];
+  Vec3 f000 = field[grid.idx(x0, y0, z0)];
+  Vec3 f100 = field[grid.idx(x1, y0, z0)];
+  Vec3 f010 = field[grid.idx(x0, y1, z0)];
+  Vec3 f110 = field[grid.idx(x1, y1, z0)];
+  Vec3 f001 = field[grid.idx(x0, y0, z1)];
+  Vec3 f101 = field[grid.idx(x1, y0, z1)];
+  Vec3 f011 = field[grid.idx(x0, y1, z1)];
+  Vec3 f111 = field[grid.idx(x1, y1, z1)];
 
   // interpolate along X
   Vec3 f00 = linearInterpolate(f000, f100, u);
