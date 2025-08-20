@@ -1,3 +1,4 @@
+
 #include <math.h>
 
 #include <algorithm>
@@ -103,6 +104,22 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
   Vec3 f111;
 
   f000 = field[grid.idx(x0, y0, z0)];
-  f100 = field[x1, y0, z0];
-  f010 = field[x0, y1, z0];
+  f100 = field[grid.idx(x1, y0, z0)];
+  f010 = field[grid.idx(x0, y1, z0)];
+  f110 = field[grid.idx(x1, y1, z0)];
+  f001 = field[grid.idx(x0, y0, z1)];
+  f101 = field[grid.idx(x1, y0, z1)];
+  f011 = field[grid.idx(x0, y1, z1)];
+  f111 = field[grid.idx(x1, y1, z1)];
+
+  // Interpolate along X
+  Vec3 f00;
+  Vec3 f10;
+  Vec3 f01;
+  Vec3 f11;
+
+  f00 = f000 * (1 - u) + f100 * u;
+  f10 = f010 * (1 - u) + f110 * u;
+  f01 = f001 * (1 - u) + f101 * u;
+  f11 = f011 * (1 - u) + f111 * u;
 }
