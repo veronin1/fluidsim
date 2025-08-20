@@ -1,3 +1,4 @@
+#include "navier.hpp"
 
 #include <math.h>
 
@@ -12,25 +13,6 @@ constexpr size_t gridSizeZ = 50;
 
 constexpr float DENSITY_WATER_KG_PER_M3 = 997.0F;
 constexpr float GRAVITY_FORCE_EARTH_M_PER_S2 = 9.807F;
-
-struct Grid3D {
-  size_t nx, ny, nz;
-  Grid3D(size_t x, size_t y, size_t z) : nx(x), ny(y), nz(z) {}
-
-  [[nodiscard]] size_t idx(size_t x, size_t y, size_t z) const {
-    return x + nx * (y + ny * z);
-  }
-};
-
-struct Vec3 {
-  float x = 0.0f, y = 0.0f, z = 0.0f;
-};
-
-struct Liquid {
-  std::vector<Vec3> velocity;
-  std::vector<float> density;
-  std::vector<float> pressure;
-};
 
 int navier() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
@@ -112,24 +94,20 @@ Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
   f011 = field[grid.idx(x0, y1, z1)];
   f111 = field[grid.idx(x1, y1, z1)];
 
-  // Interpolate along X
-  Vec3 f00;
-  Vec3 f10;
-  Vec3 f01;
-  Vec3 f11;
+  // interpolate along X
+  Vec3 f00 = linearInterpolate(f000, f100, u);
+  Vec3 f10 = linearInterpolate(f010, f110, u);
+  Vec3 f01 = linearInterpolate(f001, f101, u);
+  Vec3 f11 = linearInterpolate(f011, f111, u);
 
-  f00 = f000 * (1 - u) + f100 * u;
-  f10 = f010 * (1 - u) + f110 * u;
-  f01 = f001 * (1 - u) + f101 * u;
-  f11 = f011 * (1 - u) + f111 * u;
+  // interpolate along Y
+  Vec3 f0 = linearInterpolate(f00, f10, v);
+  Vec3 f1 = linearInterpolate(f01, f11, v);
 
-  Vec3 f0;
-  Vec3 f1;
+  // interpolate along Z
+  return linearInterpolate(f0, f1, w);
+}
 
-  f0 = f00 * (1 - v) + f10 * v;
-  f1 = f01 * (1 - v) + f11 * v;
-
-  Vec3 last;
-  last = f0 * (1 - w) + f1 * w;
-  return last;
+Vec3 linearInterpolate(const Vec3& a, const Vec3& b, float t) {
+  return a * b(1 - t) + b * t;
 }
