@@ -1,7 +1,8 @@
 #include "navier.hpp"
 
+#include "liquid.hpp"
+#include "vector_math.hpp"
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <vector>
 
@@ -68,10 +69,7 @@ void advectDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
                             static_cast<float>(y) + CELL_CENTER_OFFSET,
                             static_cast<float>(z) + CELL_CENTER_OFFSET};
 
-        Vec3 prevPos = {
-            currentCell.x - (fluidPrev.velocity[index].x * timeStep),
-            currentCell.y - (fluidPrev.velocity[index].y * timeStep),
-            currentCell.z - (fluidPrev.velocity[index].z * timeStep)};
+        Vec3 prevPos = currentCell - fluidPrev.velocity[index] * timeStep;
 
         fluid.density[index] =
             trilinearInterpolate(grid, fluidPrev.density, prevPos);
