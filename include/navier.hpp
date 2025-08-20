@@ -24,6 +24,8 @@ struct Liquid {
 int navier();
 void applyForces(float timeStep, Liquid& fluid);
 void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep);
-Vec3 trilinearInterpolate(const Grid3D& grid, const std::vector<Vec3>& field,
-                          const Vec3& pos);
-Vec3 linearInterpolate(const Vec3& a, const Vec3& b, float t);
+template <typename T>
+T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
+                       const Vec3& pos);
+template <typename T>
+T linearInterpolate(const T& a, const T& b, float t);
