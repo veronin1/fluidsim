@@ -9,7 +9,9 @@ struct Vec3 {
   }
 
   // vec3 * scalar (s)
-  Vec3 operator*(const float s) const { return {x * s, y * s, z * s}; }
+  Vec3 operator*(const float scalar) const {
+    return {x * scalar, y * scalar, z * scalar};
+  }
 
   // vec3 - vec3
   Vec3 operator-(const Vec3& other) const {

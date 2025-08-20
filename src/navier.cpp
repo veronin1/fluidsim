@@ -1,6 +1,7 @@
 #include "navier.hpp"
 
 #include "liquid.hpp"
+#include "vec3.hpp"
 #include "vector_math.hpp"
 #include <algorithm>
 #include <cstddef>
@@ -45,10 +46,7 @@ void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
                             static_cast<float>(y) + CELL_CENTER_OFFSET,
                             static_cast<float>(z) + CELL_CENTER_OFFSET};
 
-        Vec3 prevPos = {
-            currentCell.x - (fluidPrev.velocity[index].x * timeStep),
-            currentCell.y - (fluidPrev.velocity[index].y * timeStep),
-            currentCell.z - (fluidPrev.velocity[index].z * timeStep)};
+        Vec3 prevPos = currentCell - fluidPrev.velocity[index] * timeStep;
 
         fluid.velocity[index] =
             trilinearInterpolate(grid, fluidPrev.velocity, prevPos);
