@@ -1,4 +1,5 @@
 #pragma once
+
 #include "vec3.hpp"
 #include <cmath>
 #include <cstddef>
@@ -22,9 +23,12 @@ T linearInterpolate(const T& a, const T& b, float t) {
 template <typename T>
 T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
                        const Vec3& pos) {
-  int x0 = static_cast<int>(std::floor(pos.x)), x1 = x0 + 1;
-  int y0 = static_cast<int>(std::floor(pos.y)), y1 = y0 + 1;
-  int z0 = static_cast<int>(std::floor(pos.z)), z1 = z0 + 1;
+  int x0 = static_cast<int>(std::floor(pos.x));
+  int x1 = x0 + 1;
+  int y0 = static_cast<int>(std::floor(pos.y));
+  int y1 = y0 + 1;
+  int z0 = static_cast<int>(std::floor(pos.z));
+  int z1 = z0 + 1;
 
   float u = pos.x - x0;
   float v = pos.y - y0;
