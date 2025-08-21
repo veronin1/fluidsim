@@ -31,7 +31,7 @@ void advect(Grid3D& grid, const std::vector<T>& velocityField,
 
 template <typename T>
 void diffuse(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
-             float diffusionRate, float timeStep) {
+             float coefficient, float timeStep) {
   constexpr float NUM_OF_NEIGHBOURS = 6.0F;
   constexpr size_t MAX_ITERATIONS = 20;
 
@@ -62,7 +62,7 @@ void diffuse(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
           T laplacian = neighbourSum - NUM_OF_NEIGHBOURS * (*src)[index];
 
           // diffuse velocity
-          (*dst)[index] = (*src)[index] + diffusionRate * timeStep * laplacian;
+          (*dst)[index] = (*src)[index] + coefficient * timeStep * laplacian;
         }
       }
     }
