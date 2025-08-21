@@ -141,9 +141,9 @@ void diffuseDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
 
           // laplacian
           float laplacian =
-              neighbourSum - NUM_OF_NEIGHBOURS * fluidPrev.density[index];
+              neighbourSum - (NUM_OF_NEIGHBOURS * fluidPrev.density[index]);
 
-          // diffuse velocity
+          // diffuse density
           fluid.density[index] =
               fluid.density[index] + fluid.diffusionRate * timeStep * laplacian;
         }
