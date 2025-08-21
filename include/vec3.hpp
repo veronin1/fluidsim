@@ -18,3 +18,8 @@ struct Vec3 {
     return {x - other.x, y - other.y, z - other.z};
   }
 };
+
+// scalar * vec3
+inline Vec3 operator*(float scalar, const Vec3& v) {
+  return {v.x * scalar, v.y * scalar, v.z * scalar};
+}
