@@ -76,46 +76,47 @@ void advectDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
   }
 }
 
-void diffuseVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
+template <typename T>
+void diffuseVelocity(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
+                     float diffusionRate, float timeStep) {
   constexpr float NUM_OF_NEIGHBOURS = 6.0F;
   constexpr size_t MAX_ITERATIONS = 20;
 
-  Liquid buffer1 = fluid;
-  Liquid buffer2 = fluid;
-
-  Liquid* src = &buffer1;
-  Liquid* dst = &buffer2;
+  std::vector<T>* src = &data;
+  std::vector<T>* dst = &temp;
 
   for (size_t i = 0; i < MAX_ITERATIONS; ++i) {
     for (size_t z = 0; z < grid.nz; ++z) {
       for (size_t y = 0; y < grid.ny; ++y) {
         for (size_t x = 0; x < grid.nx; ++x) {
           size_t index = grid.idx(x, y, z);
-          Vec3 neighbourSum = Vec3{0, 0, 0};
+          T neighbourSum{};
 
           // x neighbours
-          neighbourSum.x += src->velocity[grid.idx(x - 1, y, z)].x;
-          neighbourSum.x += src->velocity[grid.idx(x + 1, y, z)].x;
+          neighbourSum += (*src)[grid.idx(x - 1, y, z)];
+          neighbourSum += (*src)[grid.idx(x + 1, y, z)];
 
           // y neighbours
-          neighbourSum.y += src->velocity[grid.idx(x, y - 1, z)].y;
-          neighbourSum.y += src->velocity[grid.idx(x, y + 1, z)].y;
+          neighbourSum += (*src)[grid.idx(x, y - 1, z)];
+          neighbourSum += (*src)[grid.idx(x, y + 1, z)];
 
           // z neighbours
-          neighbourSum.z += src->velocity[grid.idx(x, y, z - 1)].z;
-          neighbourSum.z += src->velocity[grid.idx(x, y, z + 1)].z;
+
+          neighbourSum += (*src)[grid.idx(x, y, z - 1)];
+          neighbourSum += (*src)[grid.idx(x, y, z + 1)];
 
           // laplacian
-          Vec3 laplacian =
-              neighbourSum - NUM_OF_NEIGHBOURS * src->velocity[index];
+          T laplacian = neighbourSum - NUM_OF_NEIGHBOURS * (*src)[index];
 
           // diffuse velocity
-          dst->velocity[index] =
-              src->velocity[index] + fluid.viscosity * timeStep * laplacian;
+          (*dst)[index] = (*src)[index] + diffusionRate * timeStep * laplacian;
         }
       }
     }
     std::swap(dst, src);
+  }
+  if (src != &data) {
+    data = *src;
   }
 }
 
