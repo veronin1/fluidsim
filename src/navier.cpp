@@ -37,18 +37,12 @@ void applyForces(float timeStep, Liquid& fluid) {
 // calculate projection
 void project(float timeStep, Grid3D& grid, Liquid& fluid,
              std::vector<float>& divergence) {
-  for (size_t z = 0; z < grid.nz; ++z) {
-    for (size_t y = 0; y < grid.ny; ++y) {
-      for (size_t x = 0; x < grid.nx; ++x) {
-        size_t index = grid.idx(x, y, z);
-        divergence[index] = computeDivergence(grid, fluid.velocity, divergence);
-      }
-    }
-  }
+  computeDivergence(grid, fluid.velocity, divergence);
 }
 
 void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
                        std::vector<float>& divergence) {
+  constexpr float DIV_FACTOR = 2.0F;
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
@@ -58,7 +52,7 @@ void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
                                          velocity[grid.idx(x, y - 1, z)].y +
                                          velocity[grid.idx(x, y, z + 1)].z -
                                          velocity[grid.idx(x, y, z - 1)].z) /
-                                        2.0F;
+                                        DIV_FACTOR;
       }
     }
   }
