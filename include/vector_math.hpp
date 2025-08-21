@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec3.hpp"
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <vector>
@@ -9,6 +10,10 @@ struct Grid3D {
   size_t nx, ny, nz;
   Grid3D(size_t x, size_t y, size_t z) : nx(x), ny(y), nz(z) {}
   [[nodiscard]] size_t idx(size_t x, size_t y, size_t z) const {
+    x = std::clamp(x, size_t(0), nx - 1);
+    y = std::clamp(y, size_t(0), ny - 1);
+    z = std::clamp(z, size_t(0), nz - 1);
+
     return x + nx * (y + ny * z);
   }
 };
