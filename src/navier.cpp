@@ -78,32 +78,37 @@ void advectDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
 
 void diffuseVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
   constexpr float NUM_OF_NEIGHBOURS = 6.0F;
+  constexpr size_t MAX_ITERATIONS = 20;
 
-  for (size_t z = 0; z < grid.nz; ++z) {
-    for (size_t y = 0; y < grid.ny; ++y) {
-      for (size_t x = 0; x < grid.nx; ++x) {
-        size_t index = grid.idx(x, y, z);
-        Vec3 neighbourSum = Vec3{0, 0, 0};
+  for (size_t i = 0; i < MAX_ITERATIONS; ++i) {
+    Liquid fluidPrev = fluid;
 
-        // x neighbours
-        neighbourSum.x += fluid.velocity[grid.idx(x - 1, y, z)].x;
-        neighbourSum.x += fluid.velocity[grid.idx(x + 1, y, z)].x;
+    for (size_t z = 0; z < grid.nz; ++z) {
+      for (size_t y = 0; y < grid.ny; ++y) {
+        for (size_t x = 0; x < grid.nx; ++x) {
+          size_t index = grid.idx(x, y, z);
+          Vec3 neighbourSum = Vec3{0, 0, 0};
 
-        // y neighbours
-        neighbourSum.y += fluid.velocity[grid.idx(x, y - 1, z)].y;
-        neighbourSum.y += fluid.velocity[grid.idx(x, y + 1, z)].y;
+          // x neighbours
+          neighbourSum.x += fluidPrev.velocity[grid.idx(x - 1, y, z)].x;
+          neighbourSum.x += fluidPrev.velocity[grid.idx(x + 1, y, z)].x;
 
-        // z neighbours
-        neighbourSum.z += fluid.velocity[grid.idx(x, y, z - 1)].z;
-        neighbourSum.z += fluid.velocity[grid.idx(x, y, z + 1)].z;
+          // y neighbours
+          neighbourSum.y += fluidPrev.velocity[grid.idx(x, y - 1, z)].y;
+          neighbourSum.y += fluidPrev.velocity[grid.idx(x, y + 1, z)].y;
 
-        // laplacian
-        Vec3 laplacian =
-            neighbourSum - NUM_OF_NEIGHBOURS * fluid.velocity[index];
+          // z neighbours
+          neighbourSum.z += fluidPrev.velocity[grid.idx(x, y, z - 1)].z;
+          neighbourSum.z += fluidPrev.velocity[grid.idx(x, y, z + 1)].z;
 
-        // diffuse velocity
-        fluid.velocity[index] =
-            fluid.velocity[index] + fluid.viscosity * timeStep * laplacian;
+          // laplacian
+          Vec3 laplacian =
+              neighbourSum - NUM_OF_NEIGHBOURS * fluidPrev.velocity[index];
+
+          // diffuse velocity
+          fluid.velocity[index] =
+              fluid.velocity[index] + fluid.viscosity * timeStep * laplacian;
+        }
       }
     }
   }
