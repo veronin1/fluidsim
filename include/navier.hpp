@@ -5,6 +5,7 @@
 #include <vector>
 
 int navier();
+
 void applyForces(float timeStep, Liquid& fluid);
 
 template <typename T>
