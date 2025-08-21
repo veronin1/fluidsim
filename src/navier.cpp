@@ -113,3 +113,41 @@ void diffuseVelocity(Grid3D& grid, Liquid& fluid, float timeStep) {
     }
   }
 }
+
+void diffuseDensity(Grid3D& grid, Liquid& fluid, float timeStep) {
+  constexpr float NUM_OF_NEIGHBOURS = 6.0F;
+  constexpr size_t MAX_ITERATIONS = 20;
+
+  for (size_t i = 0; i < MAX_ITERATIONS; ++i) {
+    Liquid fluidPrev = fluid;
+
+    for (size_t z = 0; z < grid.nz; ++z) {
+      for (size_t y = 0; y < grid.ny; ++y) {
+        for (size_t x = 0; x < grid.nx; ++x) {
+          size_t index = grid.idx(x, y, z);
+          float neighbourSum = 0.0F;
+
+          // x neighbours
+          neighbourSum += fluidPrev.density[grid.idx(x - 1, y, z)];
+          neighbourSum += fluidPrev.density[grid.idx(x + 1, y, z)];
+
+          // y neighbours
+          neighbourSum += fluidPrev.density[grid.idx(x, y - 1, z)];
+          neighbourSum += fluidPrev.density[grid.idx(x, y + 1, z)];
+
+          // z neighbours
+          neighbourSum += fluidPrev.density[grid.idx(x, y, z - 1)];
+          neighbourSum += fluidPrev.density[grid.idx(x, y, z + 1)];
+
+          // laplacian
+          float laplacian =
+              neighbourSum - (NUM_OF_NEIGHBOURS * fluidPrev.density[index]);
+
+          // diffuse density
+          fluid.density[index] =
+              fluid.density[index] + fluid.diffusionRate * timeStep * laplacian;
+        }
+      }
+    }
+  }
+}
