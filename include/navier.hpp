@@ -6,8 +6,27 @@
 
 int navier();
 void applyForces(float timeStep, Liquid& fluid);
-void advectVelocity(Grid3D& grid, Liquid& fluid, float timeStep);
-void advectDensity(Grid3D& grid, Liquid& fluid, float timeStep);
+
+template <typename T>
+void advect(Grid3D& grid, const std::vector<T>& velocityField,
+            std::vector<T>& field, float timeStep) {
+  constexpr float CELL_CENTER_OFFSET = 0.5F;
+
+  for (size_t z = 0; z < grid.nz; ++z) {
+    for (size_t y = 0; y < grid.ny; ++y) {
+      for (size_t x = 0; x < grid.nx; ++x) {
+        size_t index = grid.idx(x, y, z);
+        Vec3 currentCell = {static_cast<float>(x) + CELL_CENTER_OFFSET,
+                            static_cast<float>(y) + CELL_CENTER_OFFSET,
+                            static_cast<float>(z) + CELL_CENTER_OFFSET};
+
+        Vec3 prevPos = currentCell - velocityField[index] * timeStep;
+
+        field[index] = trilinearInterpolate(grid, field, prevPos);
+      }
+    }
+  }
+}
 
 template <typename T>
 void diffuse(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
