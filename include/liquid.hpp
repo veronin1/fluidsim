@@ -7,4 +7,7 @@ struct Liquid {
   std::vector<Vec3> velocity;
   std::vector<float> density;
   std::vector<float> pressure;
+
+  float viscosity;
+  float diffusionRate;
 };
