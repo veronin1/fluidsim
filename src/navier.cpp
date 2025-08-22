@@ -35,9 +35,11 @@ void applyForces(float timeStep, Liquid& fluid) {
 }
 
 // calculate projection
-void project(float timeStep, Grid3D& grid, Liquid& fluid,
-             std::vector<float>& divergence) {
+void project(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
+             std::vector<float>& pressure) {
   computeDivergence(grid, fluid.velocity, divergence);
+  solvePressure(grid, divergence, pressure);
+  subtractPressureGradient(grid, pressure, fluid.velocity);
 }
 
 void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
