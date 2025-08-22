@@ -11,16 +11,15 @@ constexpr size_t gridSizeX = 100;
 constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
 
-constexpr float DENSITY_WATER_KG_PER_M3 = 997.0F;
-constexpr float GRAVITY_FORCE_EARTH_M_PER_S2 = 9.807F;
-constexpr float VISCOSITY_WATER_M2_PER_S = 1.0e-6F;
-
 int navier() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
 
   std::vector<Vec3> velocity(gridSizeX * gridSizeY * gridSizeZ);
   std::vector<float> density(gridSizeX * gridSizeY * gridSizeZ);
   std::vector<float> pressure(gridSizeX * gridSizeY * gridSizeZ);
+
+  Liquid water(gridSizeX, gridSizeY, gridSizeZ, VISCOSITY_WATER_M2_PER_S,
+               WATER_DIFFUSION_RATE);
 
   // set density to water density (non-changing)
   std::fill(density.begin(), density.end(), DENSITY_WATER_KG_PER_M3);
@@ -31,7 +30,8 @@ int navier() {
 void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
                   std::vector<float>& pressure, float timeStep) {
   // 1. Apply external forces
-  applyForces(timeStep, fluid);
+  Vec3 gravity{0, 0, GRAVITY_FORCE_EARTH_M_PER_S2};
+  applyForces(timeStep, gravity, fluid);
 
   // 2. Diffuse velocity
   std::vector<Vec3> tempVelocity(grid.size());
@@ -55,9 +55,9 @@ void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
 }
 
 // apply gravity (testing)
-void applyForces(float timeStep, Liquid& fluid) {
+void applyForces(float timeStep, const Vec3& force, Liquid& fluid) {
   for (auto& vel : fluid.velocity) {
-    vel.z += GRAVITY_FORCE_EARTH_M_PER_S2 * timeStep;
+    vel += force * timeStep;
   }
 }
 

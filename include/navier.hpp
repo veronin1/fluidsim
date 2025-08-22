@@ -6,7 +6,7 @@
 
 int navier();
 
-void applyForces(float timeStep, Liquid& fluid);
+void applyForces(float timeStep, const Vec3& force, Liquid& fluid);
 
 template <typename VelT, typename FieldT>
 void advect(Grid3D& grid, const std::vector<VelT>& velocityField,
