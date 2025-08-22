@@ -75,5 +75,9 @@ void diffuse(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
 
 void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
                        std::vector<float>& divergence);
+void solvePressure(Grid3D& grid, std::vector<float>& divergence,
+                   std::vector<float>& pressure);
+void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
+                              std::vector<Vec3>& velocity);
 void project(float timeStep, Grid3D& grid, Liquid& fluid,
              std::vector<float>& divergence);

@@ -57,3 +57,43 @@ void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
     }
   }
 }
+
+void solvePressure(Grid3D& grid, std::vector<float>& divergence,
+                   std::vector<float>& pressure) {
+  constexpr float NUM_OF_NEIGHBOURS = 6.0F;
+  constexpr size_t MAX_ITERATIONS = 20;
+
+  std::vector<float> pressureTemp = pressure;
+
+  for (size_t i = 0; i < MAX_ITERATIONS; ++i) {
+    for (size_t z = 0; z < grid.nz; ++z) {
+      for (size_t y = 0; y < grid.ny; ++y) {
+        for (size_t x = 0; x < grid.nx; ++x) {
+          size_t index = grid.idx(x, y, z);
+
+          pressureTemp[index] = 0;
+
+          // x neighbours
+          pressureTemp[index] += pressure[grid.idx(x + 1, y, z)];
+          pressureTemp[index] += pressure[grid.idx(x - 1, y, z)];
+
+          // y neighbours
+          pressureTemp[index] += pressure[grid.idx(x, y + 1, z)];
+          pressureTemp[index] += pressure[grid.idx(x, y - 1, z)];
+
+          // z neighbours
+          pressureTemp[index] += pressure[grid.idx(x, y, z + 1)];
+          pressureTemp[index] += pressure[grid.idx(x, y, z - 1)];
+
+          float laplacian =
+              pressureTemp[index] - (NUM_OF_NEIGHBOURS * pressure[index]);
+
+          pressure[index] = (laplacian - divergence[index]) / NUM_OF_NEIGHBOURS;
+        }
+      }
+    }
+  }
+}
+
+void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
+                              std::vector<Vec3>& velocity) {}
