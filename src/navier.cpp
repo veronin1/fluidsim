@@ -96,4 +96,26 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
 }
 
 void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
-                              std::vector<Vec3>& velocity) {}
+                              std::vector<Vec3>& velocity) {
+  constexpr float GRID_SPACING = 0.5F;
+
+  for (size_t z = 0; z < grid.nz; ++z) {
+    for (size_t y = 0; y < grid.ny; ++y) {
+      for (size_t x = 0; x < grid.nx; ++x) {
+        size_t index = grid.idx(x, y, z);
+        float gradX = ((pressure[grid.idx(x + 1, y, z)] -
+                        pressure[grid.idx(x - 1, y, z)])) /
+                      (2 * GRID_SPACING);
+        float gradY = ((pressure[grid.idx(x, y + 1, z)] -
+                        pressure[grid.idx(x, y - 1, z)])) /
+                      (2 * GRID_SPACING);
+        float gradZ = ((pressure[grid.idx(x, y, z + 1)] -
+                        pressure[grid.idx(x, y, z - 1)])) /
+                      (2 * GRID_SPACING);
+
+        Vec3 grad{gradX, gradY, gradZ};
+        velocity[index] -= grad;
+      }
+    }
+  }
+}
