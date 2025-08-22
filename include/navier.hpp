@@ -8,9 +8,9 @@ int navier();
 
 void applyForces(float timeStep, Liquid& fluid);
 
-template <typename T>
-void advect(Grid3D& grid, const std::vector<T>& velocityField,
-            std::vector<T>& field, float timeStep) {
+template <typename VelT, typename FieldT>
+void advect(Grid3D& grid, const std::vector<VelT>& velocityField,
+            std::vector<FieldT>& field, float timeStep) {
   constexpr float CELL_CENTER_OFFSET = 0.5F;
 
   for (size_t z = 0; z < grid.nz; ++z) {
@@ -79,4 +79,7 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
                    std::vector<float>& pressure);
 void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
                               std::vector<Vec3>& velocity);
-void project(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence);
+void project(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
+             std::vector<float>& pressure);
+void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
+                  std::vector<float>& pressure, float timeStep);

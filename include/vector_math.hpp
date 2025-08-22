@@ -16,6 +16,8 @@ struct Grid3D {
 
     return x + nx * (y + ny * z);
   }
+
+  [[nodiscard]] size_t size() const { return nx * ny * nz; }
 };
 
 // linear interpolation
