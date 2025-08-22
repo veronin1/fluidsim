@@ -5,6 +5,7 @@
 #include "vector_math.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <iostream>
 #include <vector>
 
 constexpr size_t gridSizeX = 100;
@@ -13,18 +14,50 @@ constexpr size_t gridSizeZ = 50;
 
 int navier() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
-
-  std::vector<Vec3> velocity(gridSizeX * gridSizeY * gridSizeZ);
-  std::vector<float> density(gridSizeX * gridSizeY * gridSizeZ);
-  std::vector<float> pressure(gridSizeX * gridSizeY * gridSizeZ);
-
   Liquid water(gridSizeX, gridSizeY, gridSizeZ, VISCOSITY_WATER_M2_PER_S,
                WATER_DIFFUSION_RATE);
 
-  // set density to water density (non-changing)
-  std::fill(density.begin(), density.end(), DENSITY_WATER_KG_PER_M3);
+  std::vector<float> divergence(grid.size());
+  std::vector<float> pressure(grid.size());
+
+  // initialise water density
+  std::fill(water.density.begin(), water.density.end(),
+            DENSITY_WATER_KG_PER_M3);
+
+  float dt = 0.01F;
+  size_t numSteps = 100;
+
+  for (size_t step = 0; step < numSteps; ++step) {
+    simulateStep(grid, water, divergence, pressure, dt);
+    printDensitySlice(grid, water.density, gridSizeZ / 2);
+  }
 
   return 0;
+}
+
+void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
+                       size_t zSlice) {
+  for (size_t y = 0; y < grid.ny; ++y) {
+    for (size_t x = 0; x < grid.nx; ++x) {
+      float value = density[grid.idx(x, y, zSlice)];
+
+      float normalized = value / DENSITY_WATER_KG_PER_M3;
+      if (normalized > 1.0F)
+        std::cout << "@";
+      else if (normalized > 0.8F)
+        std::cout << "#";
+      else if (normalized > 0.6F)
+        std::cout << "O";
+      else if (normalized > 0.4F)
+        std::cout << "o";
+      else if (normalized > 0.2F)
+        std::cout << ".";
+      else
+        std::cout << " ";
+    }
+    std::cout << "\n";
+  }
+  std::cout << "\n";
 }
 
 void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
@@ -37,7 +70,7 @@ void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
   std::vector<Vec3> tempVelocity(grid.size());
   diffuse(grid, fluid.velocity, tempVelocity, fluid.viscosity, timeStep);
 
-  // 3. Project velocit
+  // 3. Project velocity
   project(grid, fluid, divergence, pressure);
 
   // 4. Advect velocity

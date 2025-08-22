@@ -8,6 +8,9 @@ int navier();
 
 void applyForces(float timeStep, const Vec3& force, Liquid& fluid);
 
+void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
+                       size_t zSlice);
+
 template <typename VelT, typename FieldT>
 void advect(Grid3D& grid, const std::vector<VelT>& velocityField,
             std::vector<FieldT>& field, float timeStep) {

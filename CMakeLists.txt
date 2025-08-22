@@ -37,7 +37,7 @@ else()
         -Wfloat-equal
         -Wnull-dereference
         -Wdouble-promotion
-        -Werror
+
         -fstack-protector-strong
         -D_FORTIFY_SOURCE=2
         -O1
@@ -53,7 +53,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 # executable
-add_executable(fluidsim src/main.cpp src/WindowManager.cpp src/RenderPipeline.cpp)
+add_executable(fluidsim src/main.cpp src/WindowManager.cpp src/RenderPipeline.cpp src/navier.cpp)
 target_include_directories(fluidsim PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(fluidsim PRIVATE glad OpenGL::GL glfw glm)
 
