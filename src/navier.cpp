@@ -52,7 +52,7 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
 
       float normalized = value / DENSITY_WATER_KG_PER_M3;
       if (normalized > 1.0F)
-        std::cout << "@";
+        std::cout << "/";
       else if (normalized > 0.8F)
         std::cout << "#";
       else if (normalized > 0.6F)
