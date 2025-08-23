@@ -153,8 +153,8 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
         }
       }
     }
+    std::swap(pressure, pressureTemp);
   }
-  std::swap(pressure, pressureTemp);
 }
 
 void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
