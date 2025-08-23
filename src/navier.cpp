@@ -24,16 +24,7 @@ int navier() {
   std::fill(water.density.begin(), water.density.end(),
             DENSITY_WATER_KG_PER_M3);
 
-  // Put a blob of high density in the center
-  for (size_t z = 20; z < 30; ++z) {
-    for (size_t y = 40; y < 60; ++y) {
-      for (size_t x = 40; x < 60; ++x) {
-        water.density[grid.idx(x, y, z)] = DENSITY_WATER_KG_PER_M3 * 2.0F;
-      }
-    }
-  }
-
-  float dt = 0.01F;
+  float dt = 0.02F;
   size_t numSteps = 100;
 
   for (size_t step = 0; step < numSteps; ++step) {
@@ -46,23 +37,32 @@ int navier() {
 
 void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
                        size_t zSlice) {
+  float maxDensity = 0.0F;
+  for (size_t y = 0; y < grid.ny; ++y) {
+    for (size_t x = 0; x < grid.nx; ++x) {
+      float value = density[grid.idx(x, y, zSlice)];
+      maxDensity = std::max(value, maxDensity);
+    }
+  }
+
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
       float value = density[grid.idx(x, y, zSlice)];
 
-      float normalized = value / DENSITY_WATER_KG_PER_M3;
-      if (normalized > 1.0F)
+      float normalized = value / maxDensity;
+      if (normalized > 0.9F) {
         std::cout << "@";
-      else if (normalized > 0.8F)
+      } else if (normalized > 0.7F) {
         std::cout << "#";
-      else if (normalized > 0.6F)
+      } else if (normalized > 0.5F) {
         std::cout << "O";
-      else if (normalized > 0.4F)
+      } else if (normalized > 0.3F) {
         std::cout << "o";
-      else if (normalized > 0.2F)
+      } else if (normalized > 0.1F) {
         std::cout << ".";
-      else
+      } else {
         std::cout << " ";
+      }
     }
     std::cout << "\n";
   }
