@@ -52,7 +52,7 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
 
       float normalized = value / DENSITY_WATER_KG_PER_M3;
       if (normalized > 1.0F)
-        std::cout << "/";
+        std::cout << "@";
       else if (normalized > 0.8F)
         std::cout << "#";
       else if (normalized > 0.6F)
@@ -72,7 +72,7 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
 void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
                   std::vector<float>& pressure, float timeStep) {
   // 1. Apply external forces
-  Vec3 gravity{0, 0, GRAVITY_FORCE_EARTH_M_PER_S2};
+  Vec3 gravity{0, 0, -GRAVITY_FORCE_EARTH_M_PER_S2};
   applyForces(timeStep, gravity, fluid);
 
   // 2. Diffuse velocity
