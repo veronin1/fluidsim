@@ -24,6 +24,15 @@ int navier() {
   std::fill(water.density.begin(), water.density.end(),
             DENSITY_WATER_KG_PER_M3);
 
+  // Put a blob of high density in the center
+  for (size_t z = 20; z < 30; ++z) {
+    for (size_t y = 40; y < 60; ++y) {
+      for (size_t x = 40; x < 60; ++x) {
+        water.density[grid.idx(x, y, z)] = DENSITY_WATER_KG_PER_M3 * 2.0F;
+      }
+    }
+  }
+
   float dt = 0.01F;
   size_t numSteps = 100;
 
