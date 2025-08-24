@@ -46,14 +46,18 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
   float maxDensity = 0.0F;
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      float value = density[grid.idx(x, y, zSlice)];
+      int ix = static_cast<int>(x);
+      int iy = static_cast<int>(y);
+      float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
       maxDensity = std::max(value, maxDensity);
     }
   }
 
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      float value = density[grid.idx(x, y, zSlice)];
+      int iy = static_cast<int>(y);
+      int ix = static_cast<int>(x);
+      float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
 
       float normalized = value / maxDensity;
       if (normalized > DENSE_THRESHOLD) {
