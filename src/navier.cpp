@@ -30,11 +30,11 @@ int navier() {
   std::fill(water.density.begin(), water.density.end(),
             DENSITY_WATER_KG_PER_M3);
 
-  float dt = 0.02F;
-  size_t numSteps = 100;
+  const float deltaTime = 0.02F;
+  const size_t numSteps = 100;
 
   for (size_t step = 0; step < numSteps; ++step) {
-    simulateStep(grid, water, divergence, pressure, dt);
+    simulateStep(grid, water, divergence, pressure, deltaTime);
     printDensitySlice(grid, water.density, gridSizeZ / 2);
   }
 
@@ -46,16 +46,20 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
   float maxDensity = 0.0F;
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      float value = density[grid.idx(x, y, zSlice)];
+      const int ix = static_cast<int>(x);
+      const int iy = static_cast<int>(y);
+      const float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
       maxDensity = std::max(value, maxDensity);
     }
   }
 
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      float value = density[grid.idx(x, y, zSlice)];
+      const int iy = static_cast<int>(y);
+      const int ix = static_cast<int>(x);
+      const float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
 
-      float normalized = value / maxDensity;
+      const float normalized = value / maxDensity;
       if (normalized > DENSE_THRESHOLD) {
         std::cout << "@";
       } else if (normalized > HIGH_THRESHOLD) {
@@ -78,7 +82,7 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
 void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
                   std::vector<float>& pressure, float timeStep) {
   // 1. Apply external forces
-  Vec3 gravity{0, 0, -GRAVITY_FORCE_EARTH_M_PER_S2};
+  const Vec3 gravity{0, 0, -GRAVITY_FORCE_EARTH_M_PER_S2};
   applyForces(timeStep, gravity, fluid);
 
   // 2. Diffuse velocity
@@ -123,13 +127,18 @@ void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        divergence[grid.idx(x, y, z)] = (velocity[grid.idx(x + 1, y, z)].x -
-                                         velocity[grid.idx(x - 1, y, z)].x +
-                                         velocity[grid.idx(x, y + 1, z)].y -
-                                         velocity[grid.idx(x, y - 1, z)].y +
-                                         velocity[grid.idx(x, y, z + 1)].z -
-                                         velocity[grid.idx(x, y, z - 1)].z) /
-                                        DIV_FACTOR;
+        const int ix = static_cast<int>(x);
+        const int iy = static_cast<int>(y);
+        const int iz = static_cast<int>(z);
+
+        divergence[grid.idx(ix, iy, iz)] =
+            (velocity[grid.idx(ix + 1, iy, iz)].x -
+             velocity[grid.idx(ix - 1, iy, iz)].x +
+             velocity[grid.idx(ix, iy + 1, iz)].y -
+             velocity[grid.idx(ix, iy - 1, iz)].y +
+             velocity[grid.idx(ix, iy, iz + 1)].z -
+             velocity[grid.idx(ix, iy, iz - 1)].z) /
+            DIV_FACTOR;
       }
     }
   }
@@ -146,15 +155,19 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
     for (size_t z = 0; z < grid.nz; ++z) {
       for (size_t y = 0; y < grid.ny; ++y) {
         for (size_t x = 0; x < grid.nx; ++x) {
-          size_t index = grid.idx(x, y, z);
+          const int ix = static_cast<int>(x);
+          const int iy = static_cast<int>(y);
+          const int iz = static_cast<int>(z);
+
+          const size_t index = grid.idx(ix, iy, iz);
 
           pressureTemp[index] =
-              (pressure[grid.idx(x + 1, y, z)] +
-               pressure[grid.idx(x - 1, y, z)] +
-               pressure[grid.idx(x, y + 1, z)] +
-               pressure[grid.idx(x, y - 1, z)] +
-               pressure[grid.idx(x, y, z + 1)] +
-               pressure[grid.idx(x, y, z - 1)] - divergence[index]) /
+              (pressure[grid.idx(ix + 1, iy, iz)] +
+               pressure[grid.idx(ix - 1, iy, iz)] +
+               pressure[grid.idx(ix, iy + 1, iz)] +
+               pressure[grid.idx(ix, iy - 1, iz)] +
+               pressure[grid.idx(ix, iy, iz + 1)] +
+               pressure[grid.idx(ix, iy, iz - 1)] - divergence[index]) /
               NUM_OF_NEIGHBOURS;
         }
       }
@@ -170,18 +183,23 @@ void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        size_t index = grid.idx(x, y, z);
-        float gradX = ((pressure[grid.idx(x + 1, y, z)] -
-                        pressure[grid.idx(x - 1, y, z)])) /
-                      (2 * GRID_SPACING);
-        float gradY = ((pressure[grid.idx(x, y + 1, z)] -
-                        pressure[grid.idx(x, y - 1, z)])) /
-                      (2 * GRID_SPACING);
-        float gradZ = ((pressure[grid.idx(x, y, z + 1)] -
-                        pressure[grid.idx(x, y, z - 1)])) /
-                      (2 * GRID_SPACING);
+        const int ix = static_cast<int>(x);
+        const int iy = static_cast<int>(y);
+        const int iz = static_cast<int>(z);
 
-        Vec3 grad{gradX, gradY, gradZ};
+        const size_t index = grid.idx(ix, iy, iz);
+
+        const float gradX = ((pressure[grid.idx(ix + 1, iy, iz)] -
+                              pressure[grid.idx(ix - 1, iy, iz)])) /
+                            (2 * GRID_SPACING);
+        const float gradY = ((pressure[grid.idx(ix, iy + 1, iz)] -
+                              pressure[grid.idx(ix, iy - 1, iz)])) /
+                            (2 * GRID_SPACING);
+        const float gradZ = ((pressure[grid.idx(ix, iy, iz + 1)] -
+                              pressure[grid.idx(ix, iy, iz - 1)])) /
+                            (2 * GRID_SPACING);
+
+        const Vec3 grad{gradX, gradY, gradZ};
         velocity[index] -= grad;
       }
     }
