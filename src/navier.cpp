@@ -12,6 +12,12 @@ constexpr size_t gridSizeX = 100;
 constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
 
+constexpr float DENSE_THRESHOLD = 0.9F;
+constexpr float HIGH_THRESHOLD = 0.7F;
+constexpr float MEDIUM_THRESHOLD = 0.5F;
+constexpr float LOW_THRESHOLD = 0.3F;
+constexpr float VERY_LOW_THRESHOLD = 0.1F;
+
 int navier() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
   Liquid water(gridSizeX, gridSizeY, gridSizeZ, VISCOSITY_WATER_M2_PER_S,
@@ -50,15 +56,15 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
       float value = density[grid.idx(x, y, zSlice)];
 
       float normalized = value / maxDensity;
-      if (normalized > 0.9F) {
+      if (normalized > DENSE_THRESHOLD) {
         std::cout << "@";
-      } else if (normalized > 0.7F) {
+      } else if (normalized > HIGH_THRESHOLD) {
         std::cout << "#";
-      } else if (normalized > 0.5F) {
+      } else if (normalized > MEDIUM_THRESHOLD) {
         std::cout << "O";
-      } else if (normalized > 0.3F) {
+      } else if (normalized > LOW_THRESHOLD) {
         std::cout << "o";
-      } else if (normalized > 0.1F) {
+      } else if (normalized > VERY_LOW_THRESHOLD) {
         std::cout << ".";
       } else {
         std::cout << " ";
