@@ -30,11 +30,11 @@ int navier() {
   std::fill(water.density.begin(), water.density.end(),
             DENSITY_WATER_KG_PER_M3);
 
-  float dt = 0.02F;
-  size_t numSteps = 100;
+  const float deltaTime = 0.02F;
+  const size_t numSteps = 100;
 
   for (size_t step = 0; step < numSteps; ++step) {
-    simulateStep(grid, water, divergence, pressure, dt);
+    simulateStep(grid, water, divergence, pressure, deltaTime);
     printDensitySlice(grid, water.density, gridSizeZ / 2);
   }
 
