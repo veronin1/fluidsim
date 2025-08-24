@@ -127,9 +127,9 @@ void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        int ix = static_cast<int>(x);
-        int iy = static_cast<int>(y);
-        int iz = static_cast<int>(z);
+        const int ix = static_cast<int>(x);
+        const int iy = static_cast<int>(y);
+        const int iz = static_cast<int>(z);
 
         divergence[grid.idx(ix, iy, iz)] =
             (velocity[grid.idx(ix + 1, iy, iz)].x -
