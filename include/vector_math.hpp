@@ -37,9 +37,9 @@ T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
   int z0 = static_cast<int>(std::floor(pos.z));
   int z1 = z0 + 1;
 
-  float u = pos.x - x0;
-  float v = pos.y - y0;
-  float w = pos.z - z0;
+  float u = pos.x - static_cast<float>(x0);
+  float v = pos.y - static_cast<float>(y0);
+  float w = pos.z - static_cast<float>(z0);
 
   T f000 = field[grid.idx(x0, y0, z0)];
   T f100 = field[grid.idx(x1, y0, z0)];
