@@ -37,7 +37,7 @@ else()
         -Wfloat-equal
         -Wnull-dereference
         -Wdouble-promotion
-
+	-Werror
         -fstack-protector-strong
         -D_FORTIFY_SOURCE=2
         -O1
