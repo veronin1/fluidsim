@@ -155,11 +155,11 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
     for (size_t z = 0; z < grid.nz; ++z) {
       for (size_t y = 0; y < grid.ny; ++y) {
         for (size_t x = 0; x < grid.nx; ++x) {
-          int ix = static_cast<int>(x);
-          int iy = static_cast<int>(y);
-          int iz = static_cast<int>(z);
+          const int ix = static_cast<int>(x);
+          const int iy = static_cast<int>(y);
+          const int iz = static_cast<int>(z);
 
-          size_t index = grid.idx(ix, iy, iz);
+          const size_t index = grid.idx(ix, iy, iz);
 
           pressureTemp[index] =
               (pressure[grid.idx(ix + 1, iy, iz)] +
@@ -183,23 +183,23 @@ void subtractPressureGradient(Grid3D& grid, std::vector<float>& pressure,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        int ix = static_cast<int>(x);
-        int iy = static_cast<int>(y);
-        int iz = static_cast<int>(z);
+        const int ix = static_cast<int>(x);
+        const int iy = static_cast<int>(y);
+        const int iz = static_cast<int>(z);
 
-        size_t index = grid.idx(ix, iy, iz);
+        const size_t index = grid.idx(ix, iy, iz);
 
-        float gradX = ((pressure[grid.idx(ix + 1, iy, iz)] -
-                        pressure[grid.idx(ix - 1, iy, iz)])) /
-                      (2 * GRID_SPACING);
-        float gradY = ((pressure[grid.idx(ix, iy + 1, iz)] -
-                        pressure[grid.idx(ix, iy - 1, iz)])) /
-                      (2 * GRID_SPACING);
-        float gradZ = ((pressure[grid.idx(ix, iy, iz + 1)] -
-                        pressure[grid.idx(ix, iy, iz - 1)])) /
-                      (2 * GRID_SPACING);
+        const float gradX = ((pressure[grid.idx(ix + 1, iy, iz)] -
+                              pressure[grid.idx(ix - 1, iy, iz)])) /
+                            (2 * GRID_SPACING);
+        const float gradY = ((pressure[grid.idx(ix, iy + 1, iz)] -
+                              pressure[grid.idx(ix, iy - 1, iz)])) /
+                            (2 * GRID_SPACING);
+        const float gradZ = ((pressure[grid.idx(ix, iy, iz + 1)] -
+                              pressure[grid.idx(ix, iy, iz - 1)])) /
+                            (2 * GRID_SPACING);
 
-        Vec3 grad{gradX, gradY, gradZ};
+        const Vec3 grad{gradX, gradY, gradZ};
         velocity[index] -= grad;
       }
     }
