@@ -30,6 +30,7 @@ T linearInterpolate(const T& a, const T& b, float t) {
 template <typename T>
 T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
                        const Vec3& pos) {
+  // integer corner indices
   int x0 = static_cast<int>(std::floor(pos.x));
   int x1 = x0 + 1;
   int y0 = static_cast<int>(std::floor(pos.y));
@@ -37,19 +38,30 @@ T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
   int z0 = static_cast<int>(std::floor(pos.z));
   int z1 = z0 + 1;
 
+  // interpolation weights
   float u = pos.x - static_cast<float>(x0);
   float v = pos.y - static_cast<float>(y0);
   float w = pos.z - static_cast<float>(z0);
 
-  T f000 = field[grid.idx(x0, y0, z0)];
-  T f100 = field[grid.idx(x1, y0, z0)];
-  T f010 = field[grid.idx(x0, y1, z0)];
-  T f110 = field[grid.idx(x1, y1, z0)];
-  T f001 = field[grid.idx(x0, y0, z1)];
-  T f101 = field[grid.idx(x1, y0, z1)];
-  T f011 = field[grid.idx(x0, y1, z1)];
-  T f111 = field[grid.idx(x1, y1, z1)];
+  //  get field values
+  T f000 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y0),
+                          static_cast<size_t>(z0))];
+  T f100 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y0),
+                          static_cast<size_t>(z0))];
+  T f010 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y1),
+                          static_cast<size_t>(z0))];
+  T f110 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y1),
+                          static_cast<size_t>(z0))];
+  T f001 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y0),
+                          static_cast<size_t>(z1))];
+  T f101 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y0),
+                          static_cast<size_t>(z1))];
+  T f011 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y1),
+                          static_cast<size_t>(z1))];
+  T f111 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y1),
+                          static_cast<size_t>(z1))];
 
+  // trilinear interpolation
   T f00 = linearInterpolate(f000, f100, u);
   T f10 = linearInterpolate(f010, f110, u);
   T f01 = linearInterpolate(f001, f101, u);
