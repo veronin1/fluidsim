@@ -127,13 +127,18 @@ void computeDivergence(Grid3D& grid, const std::vector<Vec3>& velocity,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        divergence[grid.idx(x, y, z)] = (velocity[grid.idx(x + 1, y, z)].x -
-                                         velocity[grid.idx(x - 1, y, z)].x +
-                                         velocity[grid.idx(x, y + 1, z)].y -
-                                         velocity[grid.idx(x, y - 1, z)].y +
-                                         velocity[grid.idx(x, y, z + 1)].z -
-                                         velocity[grid.idx(x, y, z - 1)].z) /
-                                        DIV_FACTOR;
+        int ix = static_cast<int>(x);
+        int iy = static_cast<int>(y);
+        int iz = static_cast<int>(z);
+
+        divergence[grid.idx(ix, iy, iz)] =
+            (velocity[grid.idx(ix + 1, iy, iz)].x -
+             velocity[grid.idx(ix - 1, iy, iz)].x +
+             velocity[grid.idx(ix, iy + 1, iz)].y -
+             velocity[grid.idx(ix, iy - 1, iz)].y +
+             velocity[grid.idx(ix, iy, iz + 1)].z -
+             velocity[grid.idx(ix, iy, iz - 1)].z) /
+            DIV_FACTOR;
       }
     }
   }
