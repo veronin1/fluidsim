@@ -155,15 +155,19 @@ void solvePressure(Grid3D& grid, std::vector<float>& divergence,
     for (size_t z = 0; z < grid.nz; ++z) {
       for (size_t y = 0; y < grid.ny; ++y) {
         for (size_t x = 0; x < grid.nx; ++x) {
-          size_t index = grid.idx(x, y, z);
+          int ix = static_cast<int>(x);
+          int iy = static_cast<int>(y);
+          int iz = static_cast<int>(z);
+
+          size_t index = grid.idx(ix, iy, iz);
 
           pressureTemp[index] =
-              (pressure[grid.idx(x + 1, y, z)] +
-               pressure[grid.idx(x - 1, y, z)] +
-               pressure[grid.idx(x, y + 1, z)] +
-               pressure[grid.idx(x, y - 1, z)] +
-               pressure[grid.idx(x, y, z + 1)] +
-               pressure[grid.idx(x, y, z - 1)] - divergence[index]) /
+              (pressure[grid.idx(ix + 1, iy, iz)] +
+               pressure[grid.idx(ix - 1, iy, iz)] +
+               pressure[grid.idx(ix, iy + 1, iz)] +
+               pressure[grid.idx(ix, iy - 1, iz)] +
+               pressure[grid.idx(ix, iy, iz + 1)] +
+               pressure[grid.idx(ix, iy, iz - 1)] - divergence[index]) /
               NUM_OF_NEIGHBOURS;
         }
       }
