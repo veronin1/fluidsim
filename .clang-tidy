@@ -8,4 +8,4 @@ CheckOptions:
   - key:             readability-magic-numbers.IgnoredIntegerValues
     value:           '0;1;2;3;4;5;6;7;8;9;'
   - key: readability-identifier-length.AllowedShortNames
-    value: 'i;j;k;x;y;z;dx;dy;dz'
+    value: 'i;j;k;x;y;z;dx;dy;dz;ix;iy;iz;f00;f01'

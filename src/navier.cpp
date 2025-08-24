@@ -46,20 +46,20 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
   float maxDensity = 0.0F;
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      int ix = static_cast<int>(x);
-      int iy = static_cast<int>(y);
-      float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
+      const int ix = static_cast<int>(x);
+      const int iy = static_cast<int>(y);
+      const float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
       maxDensity = std::max(value, maxDensity);
     }
   }
 
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
-      int iy = static_cast<int>(y);
-      int ix = static_cast<int>(x);
-      float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
+      const int iy = static_cast<int>(y);
+      const int ix = static_cast<int>(x);
+      const float value = density[grid.idx(ix, iy, static_cast<int>(zSlice))];
 
-      float normalized = value / maxDensity;
+      const float normalized = value / maxDensity;
       if (normalized > DENSE_THRESHOLD) {
         std::cout << "@";
       } else if (normalized > HIGH_THRESHOLD) {
@@ -82,7 +82,7 @@ void printDensitySlice(Grid3D& grid, const std::vector<float>& density,
 void simulateStep(Grid3D& grid, Liquid& fluid, std::vector<float>& divergence,
                   std::vector<float>& pressure, float timeStep) {
   // 1. Apply external forces
-  Vec3 gravity{0, 0, -GRAVITY_FORCE_EARTH_M_PER_S2};
+  const Vec3 gravity{0, 0, -GRAVITY_FORCE_EARTH_M_PER_S2};
   applyForces(timeStep, gravity, fluid);
 
   // 2. Diffuse velocity
