@@ -59,8 +59,9 @@ target_link_libraries(fluidsim PRIVATE glad OpenGL::GL glfw glm)
 
 # clang-tidy static analysis
 set_target_properties(fluidsim PROPERTIES
-    CXX_CLANG_TIDY "clang-tidy;-header-filter=${CMAKE_SOURCE_DIR}/src/.*"
+    CXX_CLANG_TIDY "clang-tidy;-checks=-readability-identifier-length;-header-filter=${CMAKE_SOURCE_DIR}/src/.*"
 )
+
 
 # output directory
 set_target_properties(fluidsim PROPERTIES
