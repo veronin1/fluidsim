@@ -9,12 +9,14 @@
 struct Grid3D {
   size_t nx, ny, nz;
   Grid3D(size_t x, size_t y, size_t z) : nx(x), ny(y), nz(z) {}
-  [[nodiscard]] size_t idx(size_t x, size_t y, size_t z) const {
-    x = std::clamp(x, size_t(0), nx - 1);
-    y = std::clamp(y, size_t(0), ny - 1);
-    z = std::clamp(z, size_t(0), nz - 1);
 
-    return x + nx * (y + ny * z);
+  [[nodiscard]] size_t idx(int x, int y, int z) const {
+    x = std::clamp(x, 0, static_cast<int>(nx) - 1);
+    y = std::clamp(y, 0, static_cast<int>(ny) - 1);
+    z = std::clamp(z, 0, static_cast<int>(nz) - 1);
+
+    return static_cast<size_t>(x) +
+           nx * (static_cast<size_t>(y) + ny * static_cast<size_t>(z));
   }
 
   [[nodiscard]] size_t size() const { return nx * ny * nz; }
@@ -43,23 +45,15 @@ T trilinearInterpolate(const Grid3D& grid, const std::vector<T>& field,
   float v = pos.y - static_cast<float>(y0);
   float w = pos.z - static_cast<float>(z0);
 
-  //  get field values
-  T f000 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y0),
-                          static_cast<size_t>(z0))];
-  T f100 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y0),
-                          static_cast<size_t>(z0))];
-  T f010 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y1),
-                          static_cast<size_t>(z0))];
-  T f110 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y1),
-                          static_cast<size_t>(z0))];
-  T f001 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y0),
-                          static_cast<size_t>(z1))];
-  T f101 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y0),
-                          static_cast<size_t>(z1))];
-  T f011 = field[grid.idx(static_cast<size_t>(x0), static_cast<size_t>(y1),
-                          static_cast<size_t>(z1))];
-  T f111 = field[grid.idx(static_cast<size_t>(x1), static_cast<size_t>(y1),
-                          static_cast<size_t>(z1))];
+  // get field values
+  T f000 = field[grid.idx(x0, y0, z0)];
+  T f100 = field[grid.idx(x1, y0, z0)];
+  T f010 = field[grid.idx(x0, y1, z0)];
+  T f110 = field[grid.idx(x1, y1, z0)];
+  T f001 = field[grid.idx(x0, y0, z1)];
+  T f101 = field[grid.idx(x1, y0, z1)];
+  T f011 = field[grid.idx(x0, y1, z1)];
+  T f111 = field[grid.idx(x1, y1, z1)];
 
   // trilinear interpolation
   T f00 = linearInterpolate(f000, f100, u);
