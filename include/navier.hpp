@@ -19,7 +19,12 @@ void advect(Grid3D& grid, const std::vector<VelT>& velocityField,
   for (size_t z = 0; z < grid.nz; ++z) {
     for (size_t y = 0; y < grid.ny; ++y) {
       for (size_t x = 0; x < grid.nx; ++x) {
-        size_t index = grid.idx(x, y, z);
+        // cast loop indices to int for grid indexing
+        int ix = static_cast<int>(x);
+        int iy = static_cast<int>(y);
+        int iz = static_cast<int>(z);
+
+        size_t index = grid.idx(ix, iy, iz);
         Vec3 currentCell = {static_cast<float>(x) + CELL_CENTER_OFFSET,
                             static_cast<float>(y) + CELL_CENTER_OFFSET,
                             static_cast<float>(z) + CELL_CENTER_OFFSET};
@@ -45,26 +50,30 @@ void diffuse(Grid3D& grid, std::vector<T>& data, std::vector<T>& temp,
     for (size_t z = 0; z < grid.nz; ++z) {
       for (size_t y = 0; y < grid.ny; ++y) {
         for (size_t x = 0; x < grid.nx; ++x) {
-          size_t index = grid.idx(x, y, z);
+          // cast loop indices to int for neighbor calculations
+          int ix = static_cast<int>(x);
+          int iy = static_cast<int>(y);
+          int iz = static_cast<int>(z);
+
+          size_t index = grid.idx(ix, iy, iz);
           T neighbourSum{};
 
           // x neighbours
-          neighbourSum += (*src)[grid.idx(x - 1, y, z)];
-          neighbourSum += (*src)[grid.idx(x + 1, y, z)];
+          neighbourSum += (*src)[grid.idx(ix - 1, iy, iz)];
+          neighbourSum += (*src)[grid.idx(ix + 1, iy, iz)];
 
           // y neighbours
-          neighbourSum += (*src)[grid.idx(x, y - 1, z)];
-          neighbourSum += (*src)[grid.idx(x, y + 1, z)];
+          neighbourSum += (*src)[grid.idx(ix, iy - 1, iz)];
+          neighbourSum += (*src)[grid.idx(ix, iy + 1, iz)];
 
           // z neighbours
-
-          neighbourSum += (*src)[grid.idx(x, y, z - 1)];
-          neighbourSum += (*src)[grid.idx(x, y, z + 1)];
+          neighbourSum += (*src)[grid.idx(ix, iy, iz - 1)];
+          neighbourSum += (*src)[grid.idx(ix, iy, iz + 1)];
 
           // laplacian
           T laplacian = neighbourSum - NUM_OF_NEIGHBOURS * (*src)[index];
 
-          // diffuse velocity
+          // diffuse
           (*dst)[index] = (*src)[index] + coefficient * timeStep * laplacian;
         }
       }
