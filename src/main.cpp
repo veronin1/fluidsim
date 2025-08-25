@@ -18,9 +18,6 @@ std::string loadShaderSource(const std::string &filePath) {
   return buffer.str();
 }
 
-const std::string vertexShaderSource = loadShaderSource("shaders/quad.vert");
-const std::string fragmentShaderSource = loadShaderSource("shaders/quad.frag");
-
 void processInput(GLFWwindow *window);
 
 int main() {
@@ -31,8 +28,10 @@ int main() {
   const std::array<float, 9> vertices = {-0.5F, -0.5F, 0.0F, 0.5F, -0.5F,
                                          0.0F,  0.0F,  0.5F, 0.0F};
 
-  const RenderPipeline render(vertices, vertexShaderSource,
-                              fragmentShaderSource);
+  std::string vertexSource = loadShaderSource("shaders/quad.vert");
+  std::string fragmentSource = loadShaderSource("shaders/quad.frag");
+
+  const RenderPipeline render(vertices, vertexSource, fragmentSource);
 
   const Colour windowColour{0.2F, 0.3F, 0.3F, 1.0F};
 
