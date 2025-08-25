@@ -3,11 +3,12 @@
 #include <iostream>
 
 RenderPipeline::RenderPipeline(const std::array<float, 9>& vertices,
-                               const char* vertexShaderSource,
-                               const char* fragmentShaderSource)
+                               const std::string& vertexShaderSource,
+                               const std::string& fragmentShaderSource)
     : vertexCount(static_cast<GLsizei>(vertices.size() / 3)) {
-  const GLuint vertexShader = createVertexShader(vertexShaderSource);
-  const GLuint fragmentShader = createFragmentShader(fragmentShaderSource);
+  const GLuint vertexShader = createVertexShader(vertexShaderSource.c_str());
+  const GLuint fragmentShader =
+      createFragmentShader(fragmentShaderSource.c_str());
   shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
   glGenVertexArrays(1, &VAO);

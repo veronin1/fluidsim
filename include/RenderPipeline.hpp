@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cstdlib>
+#include <string>
 
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
 
@@ -14,8 +15,8 @@ class RenderPipeline {
   RenderPipeline &operator=(const RenderPipeline &) = default;
   RenderPipeline &operator=(RenderPipeline &&) = delete;
   explicit RenderPipeline(const std::array<float, 9> &vertices,
-                          const char *vertexShaderSource,
-                          const char *fragmentShaderSource);
+                          const std::string &vertexShaderSource,
+                          const std::string &fragmentShaderSource);
   ~RenderPipeline();
 
   void draw() const;
