@@ -50,6 +50,16 @@ void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) const {
       Vec3 vel = fluid.velocity[grid.idx(ix, iy, iz)];
       float speed = std::sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
       if (speed > maxSpeed) maxSpeed = speed;
+    }
+  }
+
+  for (size_t y = 0; y < grid.ny; ++y) {
+    for (size_t x = 0; x < grid.nx; ++x) {
+      const int ix = static_cast<int>(x);
+      const int iy = static_cast<int>(y);
+      const int iz = static_cast<int>(grid.nz) / 2;
+      Vec3 vel = fluid.velocity[grid.idx(ix, iy, iz)];
+      float speed = std::sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
       sliceArray[y * grid.nx + x] = speed / (maxSpeed + 1e-6f);
     }
   }
