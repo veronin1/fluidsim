@@ -6,9 +6,8 @@
 
 class FluidRenderer {
  private:
+  RenderPipeline pipeline;
   GLuint textureID;
-  GLuint shaderProgram;
-  GLuint VAO, VBO;
   size_t sliceZ;
 
  public:
