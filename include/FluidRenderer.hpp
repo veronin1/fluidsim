@@ -7,12 +7,12 @@
 class FluidRenderer {
  private:
   RenderPipeline pipeline;
-  GLuint textureID;
+  GLuint textureID = 0;
   size_t sliceZ;
 
  public:
-  FluidRenderer(Grid3D& grid);
-  void updateSlice(const Liquid& fluid, Grid3D& grid);
+  explicit FluidRenderer(Grid3D& grid);
+  void updateSlice(const Liquid& fluid, Grid3D& grid) const;
   void draw();
   ~FluidRenderer();
 };

@@ -38,7 +38,7 @@ FluidRenderer::FluidRenderer(Grid3D& grid)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) {
+void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) const {
   float maxDensity = 0.0F;
   for (size_t y = 0; y < grid.ny; ++y) {
     for (size_t x = 0; x < grid.nx; ++x) {
@@ -63,7 +63,7 @@ void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) {
       const float normalised =
           value / (maxDensity < EPSILON ? 1.0F : maxDensity);
 
-      size_t flatIndex = (y * grid.nx) + x;
+      const size_t flatIndex = (y * grid.nx) + x;
       sliceArray[flatIndex] = normalised;
     }
   }
