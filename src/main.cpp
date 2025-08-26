@@ -45,7 +45,7 @@ int main() {
     processInput(WindowManager::getGLFWwindow());
 
     stirFluid(water, grid);
-
+    
     simulateStep(grid, water, divergence, pressure, deltaTime);
 
     renderer.updateSlice(water, grid);

@@ -1,5 +1,6 @@
 #include "RenderPipeline.hpp"
 
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -102,10 +103,14 @@ GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
 }
 
 void RenderPipeline::linkVertexAttributes() {
+
+  // pos (X,y)  
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+  // UV (u,v)
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                        (void*)(2*sizeof(float)));
   glEnableVertexAttribArray(1);
 }
 
