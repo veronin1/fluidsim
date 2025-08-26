@@ -27,6 +27,10 @@ void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) {
       const int iy = static_cast<int>(y);
       const float value =
           fluid.density[grid.idx(ix, iy, static_cast<int>(sliceZ))];
+
+      if (maxDensity == 0.0F) {
+        maxDensity = 1.0F;
+      }
       const float normalised = value / maxDensity;
 
       size_t flatIndex = (y * grid.nx) + x;
