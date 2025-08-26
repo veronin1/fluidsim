@@ -2,6 +2,7 @@
 
 #include "RenderPipeline.hpp"
 
+#include "liquid.hpp"
 #include <vector>
 
 constexpr float LEFT = -1.0F;
@@ -39,16 +40,6 @@ FluidRenderer::FluidRenderer(Grid3D& grid)
 }
 
 void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) const {
-  float maxDensity = 0.0F;
-  for (size_t y = 0; y < grid.ny; ++y) {
-    for (size_t x = 0; x < grid.nx; ++x) {
-      const int ix = static_cast<int>(x);
-      const int iy = static_cast<int>(y);
-      const float value =
-          fluid.density[grid.idx(ix, iy, static_cast<int>(sliceZ))];
-      maxDensity = std::max(value, maxDensity);
-    }
-  }
 
   std::vector<float> sliceArray(grid.nx * grid.ny);
 
@@ -59,9 +50,9 @@ void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) const {
       const float value =
           fluid.density[grid.idx(ix, iy, static_cast<int>(sliceZ))];
 
-      constexpr float EPSILON = 1e-6F;
-      const float normalised =
-          value / (maxDensity < EPSILON ? 1.0F : maxDensity);
+      constexpr float MAX_DENSITY = DENSITY_WATER_KG_PER_M3;
+      const float normalised = value / MAX_DENSITY;
+          
 
       const size_t flatIndex = (y * grid.nx) + x;
       sliceArray[flatIndex] = normalised;
