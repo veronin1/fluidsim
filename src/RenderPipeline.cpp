@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-RenderPipeline::RenderPipeline(const std::array<float, 24>& vertices,
+RenderPipeline::RenderPipeline(const std::array<float, VERTEX_ARRAY_SIZE>& vertices,
                                const std::string& vertexShaderSource,
                                const std::string& fragmentShaderSource)
     : vertexCount(static_cast<GLsizei>(vertices.size() / 3)) {
