@@ -19,7 +19,7 @@ constexpr size_t gridSizeZ = 50;
 constexpr float DEFAULT_DELTA_TIME = 0.02F;
 
 void processInput(GLFWwindow* window);
-Vec3 getRandomXYZ(size_t max_x, size_t max_y, size_t max_z);
+Vec3 getRandomXYZ();
 void stirFluid(Liquid& fluid, Grid3D& grid);
 
 int main() {
@@ -73,7 +73,7 @@ void stirFluid(Liquid& fluid, Grid3D& grid) {
         const int iz = static_cast<int>(z);
 
         fluid.velocity[grid.idx(ix, iy, iz)] +=
-            getRandomXYZ(grid.nx, grid.ny, grid.nz);
+          getRandomXYZ();
       }
     }
   }
@@ -85,16 +85,11 @@ void processInput(GLFWwindow* window) {
   }
 }
 
-Vec3 getRandomXYZ(size_t max_x, size_t max_y, size_t max_z) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
+Vec3 getRandomXYZ() {
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
 
-  std::uniform_int_distribution<int> distrib_x(0, static_cast<int>(max_x));
-  std::uniform_int_distribution<int> distrib_y(0, static_cast<int>(max_y));
-  std::uniform_int_distribution<int> distrib_z(0, static_cast<int>(max_z));
 
-  Vec3 random = {static_cast<float>(distrib_x(gen)),
-                 static_cast<float>(distrib_y(gen)),
-                 static_cast<float>(distrib_z(gen))};
-  return random;
+  std::uniform_real_distribution<float> distrib(-0.1F, 0.1F);
+  return {distrib(gen), distrib(gen), distrib(gen)};
 }
