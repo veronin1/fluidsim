@@ -4,8 +4,6 @@
 
 #include <array>
 #include <cstdlib>
-#include <fstream>
-#include <sstream>
 #include <string>
 
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
@@ -37,9 +35,4 @@ class RenderPipeline {
 };
 
 // load Shader from filePath
-std::string loadShaderSource(const std::string &filePath) {
-  const std::ifstream file(filePath);
-  std::stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
+std::string loadShaderSource(const std::string &filePath);

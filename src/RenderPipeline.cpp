@@ -1,6 +1,8 @@
 #include "RenderPipeline.hpp"
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 RenderPipeline::RenderPipeline(const std::array<float, 24>& vertices,
                                const std::string& vertexShaderSource,
@@ -102,4 +104,11 @@ GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
 void RenderPipeline::linkVertexAttributes() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
+}
+
+std::string loadShaderSource(const std::string& filePath) {
+  const std::ifstream file(filePath);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }

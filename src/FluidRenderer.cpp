@@ -79,3 +79,5 @@ void FluidRenderer::draw() {
   glBindTexture(GL_TEXTURE_2D, textureID);
   pipeline.draw();
 }
+
+FluidRenderer::~FluidRenderer() { glDeleteTextures(1, &textureID); }
