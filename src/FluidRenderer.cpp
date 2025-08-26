@@ -44,3 +44,12 @@ void FluidRenderer::updateSlice(const Liquid& fluid, Grid3D& grid) {
                   static_cast<GLsizei>(grid.ny), GL_RED, GL_FLOAT,
                   sliceArray.data());
 }
+
+void FluidRenderer::draw() {
+  glUseProgram(shaderProgram);
+  glBindVertexArray(VAO);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, textureID);
+  glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+}
