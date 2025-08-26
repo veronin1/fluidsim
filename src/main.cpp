@@ -28,7 +28,7 @@ int main() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
   Liquid water(gridSizeX, gridSizeY, gridSizeZ, VISCOSITY_WATER_M2_PER_S,
                WATER_DIFFUSION_RATE);
-
+  
   std::vector<float> divergence(grid.size());
   std::vector<float> pressure(grid.size());
 
