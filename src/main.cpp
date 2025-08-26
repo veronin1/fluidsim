@@ -16,6 +16,8 @@ constexpr size_t gridSizeX = 100;
 constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
 
+constexpr float DEFAULT_DELTA_TIME = 0.02F;
+
 void processInput(GLFWwindow* window);
 Vec3 getRandomXYZ(size_t max_x, size_t max_y, size_t max_z);
 void stirFluid(Liquid& fluid, Grid3D& grid);
@@ -36,7 +38,7 @@ int main() {
             DENSITY_WATER_KG_PER_M3);
 
   FluidRenderer renderer(grid);
-  float deltaTime = 0.02F;
+  const float deltaTime = DEFAULT_DELTA_TIME;
 
   // render loop
   while (!window.shouldClose()) {
