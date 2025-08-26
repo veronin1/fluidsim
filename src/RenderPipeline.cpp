@@ -1,13 +1,18 @@
 #include "RenderPipeline.hpp"
 
+#include <cstdint>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
-RenderPipeline::RenderPipeline(const std::array<float, 9>& vertices,
-                               const char* vertexShaderSource,
-                               const char* fragmentShaderSource)
+RenderPipeline::RenderPipeline(
+    const std::array<float, VERTEX_ARRAY_SIZE>& vertices,
+    const std::string& vertexShaderSource,
+    const std::string& fragmentShaderSource)
     : vertexCount(static_cast<GLsizei>(vertices.size() / 3)) {
-  const GLuint vertexShader = createVertexShader(vertexShaderSource);
-  const GLuint fragmentShader = createFragmentShader(fragmentShaderSource);
+  const GLuint vertexShader = createVertexShader(vertexShaderSource.c_str());
+  const GLuint fragmentShader =
+      createFragmentShader(fragmentShaderSource.c_str());
   shaderProgram = createShaderProgram(vertexShader, fragmentShader);
 
   glGenVertexArrays(1, &VAO);
@@ -99,6 +104,23 @@ GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
 }
 
 void RenderPipeline::linkVertexAttributes() {
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+  // pos (X,y)
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
+
+  // UV (u,v)
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                        (void*)(2 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+}
+
+std::string loadShaderSource(const std::string& filePath) {
+  const std::ifstream file(filePath);
+  if (!file.is_open()) {
+    throw std::runtime_error("Cannot open shader file: " + filePath);
+  }
+
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }
