@@ -1,7 +1,6 @@
 #include "FluidRenderer.hpp"
 
 #include "RenderPipeline.hpp"
-#include "navier.hpp"
 #include <vector>
 
 constexpr float LEFT = -1.0F;
