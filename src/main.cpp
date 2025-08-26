@@ -17,6 +17,8 @@ constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
 
 void processInput(GLFWwindow* window);
+Vec3 getRandomXYZ(size_t max_x, size_t max_y, size_t max_z);
+void stirFluid(Liquid& fluid, Grid3D& grid);
 
 int main() {
   const WindowConfig config{1024, 768, "My Fluid Simulator"};
@@ -40,6 +42,8 @@ int main() {
   while (!window.shouldClose()) {
     processInput(WindowManager::getGLFWwindow());
 
+    stirFluid(water, grid);
+
     simulateStep(grid, water, divergence, pressure, deltaTime);
 
     renderer.updateSlice(water, grid);
@@ -58,7 +62,20 @@ int main() {
   return 0;
 }
 
-void stirFluid(Liquid& fluid, Grid3D& grid) {}
+void stirFluid(Liquid& fluid, Grid3D& grid) {
+  for (size_t z = 0; z < grid.nx; ++z) {
+    for (size_t y = 0; y < grid.ny; ++y) {
+      for (size_t x = 0; x < grid.nx; ++x) {
+        const int ix = static_cast<int>(x);
+        const int iy = static_cast<int>(y);
+        const int iz = static_cast<int>(z);
+
+        fluid.velocity[grid.idx(ix, iy, iz)] +=
+            getRandomXYZ(grid.nx, grid.ny, grid.nz);
+      }
+    }
+  }
+}
 
 void processInput(GLFWwindow* window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
