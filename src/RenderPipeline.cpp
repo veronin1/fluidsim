@@ -108,6 +108,10 @@ void RenderPipeline::linkVertexAttributes() {
 
 std::string loadShaderSource(const std::string& filePath) {
   const std::ifstream file(filePath);
+  if (!file.is_open()) {
+    throw std::runtime_error("Cannot open shader file: " + filePath);
+  }
+  
   std::stringstream buffer;
   buffer << file.rdbuf();
   return buffer.str();
