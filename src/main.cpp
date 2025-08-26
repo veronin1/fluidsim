@@ -8,6 +8,7 @@
 #include "colour.hpp"
 #include "navier.hpp"
 #include "vec3.hpp"
+#include <cmath>
 #include <liquid.hpp>
 #include <random>
 #include <string>
@@ -30,7 +31,7 @@ int main() {
   Grid3D grid(gridSizeX, gridSizeY, gridSizeZ);
   Liquid water(gridSizeX, gridSizeY, gridSizeZ, VISCOSITY_WATER_M2_PER_S,
                WATER_DIFFUSION_RATE);
-  
+
   std::vector<float> divergence(grid.size());
   std::vector<float> pressure(grid.size());
 
@@ -40,12 +41,20 @@ int main() {
   FluidRenderer renderer(grid);
   const float deltaTime = DEFAULT_DELTA_TIME;
 
+  static float t = 0.0f;
+  t += deltaTime;
+
+  // for (size_t i = 0; i < water.density.size(); ++i) {
+  //     water.density[i] = DENSITY_WATER_KG_PER_M3 + 0.1f *
+  //     (std::sin(static_cast<float>(i) * 0.1f + t) + 1.0f);
+  //   }
+
   // render loop
   while (!window.shouldClose()) {
     processInput(WindowManager::getGLFWwindow());
 
     stirFluid(water, grid);
-    
+
     simulateStep(grid, water, divergence, pressure, deltaTime);
 
     renderer.updateSlice(water, grid);
@@ -72,8 +81,7 @@ void stirFluid(Liquid& fluid, Grid3D& grid) {
         const int iy = static_cast<int>(y);
         const int iz = static_cast<int>(z);
 
-        fluid.velocity[grid.idx(ix, iy, iz)] +=
-          getRandomXYZ();
+        fluid.velocity[grid.idx(ix, iy, iz)] += getRandomXYZ();
       }
     }
   }
@@ -89,7 +97,6 @@ Vec3 getRandomXYZ() {
   static std::random_device rd;
   static std::mt19937 gen(rd());
 
-
-  std::uniform_real_distribution<float> distrib(-0.1F, 0.1F);
+  std::uniform_real_distribution<float> distrib(-1.0F, 1.0F);
   return {distrib(gen), distrib(gen), distrib(gen)};
 }

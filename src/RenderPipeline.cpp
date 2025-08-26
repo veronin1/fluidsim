@@ -5,9 +5,10 @@
 #include <iostream>
 #include <sstream>
 
-RenderPipeline::RenderPipeline(const std::array<float, VERTEX_ARRAY_SIZE>& vertices,
-                               const std::string& vertexShaderSource,
-                               const std::string& fragmentShaderSource)
+RenderPipeline::RenderPipeline(
+    const std::array<float, VERTEX_ARRAY_SIZE>& vertices,
+    const std::string& vertexShaderSource,
+    const std::string& fragmentShaderSource)
     : vertexCount(static_cast<GLsizei>(vertices.size() / 3)) {
   const GLuint vertexShader = createVertexShader(vertexShaderSource.c_str());
   const GLuint fragmentShader =
@@ -103,14 +104,13 @@ GLuint RenderPipeline::createShaderProgram(GLuint vertexShader,
 }
 
 void RenderPipeline::linkVertexAttributes() {
-
-  // pos (X,y)  
+  // pos (X,y)
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   glEnableVertexAttribArray(0);
 
   // UV (u,v)
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                        (void*)(2*sizeof(float)));
+                        (void*)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 }
 
@@ -119,7 +119,7 @@ std::string loadShaderSource(const std::string& filePath) {
   if (!file.is_open()) {
     throw std::runtime_error("Cannot open shader file: " + filePath);
   }
-  
+
   std::stringstream buffer;
   buffer << file.rdbuf();
   return buffer.str();

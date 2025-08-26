@@ -7,6 +7,8 @@ uniform sampler2D texture1;
 
 void main()
 {
-    float value = texture(texture1, TexCoord).r;
-    FragColor = vec4(value, value, value, 1.0);
+    float d = texture(texture1, TexCoord).r;
+    d = clamp(d * 5.0, 0.0, 1.0); // amplify small changes
+    FragColor = vec4(d, d, d, 1.0);
 }
+
