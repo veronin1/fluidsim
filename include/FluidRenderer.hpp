@@ -13,7 +13,7 @@ class FluidRenderer {
 
  public:
   FluidRenderer(Grid3D& grid);
-  void updateSlice(const Liquid& fluid);
+  void updateSlice(const Liquid& fluid, Grid3D& grid);
   void draw();
   ~FluidRenderer();
 };
