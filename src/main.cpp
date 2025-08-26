@@ -7,14 +7,16 @@
 #include "WindowManager.hpp"
 #include "colour.hpp"
 #include "navier.hpp"
+#include "vec3.hpp"
 #include <liquid.hpp>
+#include <random>
 #include <string>
 
 constexpr size_t gridSizeX = 100;
 constexpr size_t gridSizeY = 100;
 constexpr size_t gridSizeZ = 50;
 
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow* window);
 
 int main() {
   const WindowConfig config{1024, 768, "My Fluid Simulator"};
@@ -56,8 +58,24 @@ int main() {
   return 0;
 }
 
-void processInput(GLFWwindow *window) {
+void stirFluid(Liquid& fluid, Grid3D& grid) {}
+
+void processInput(GLFWwindow* window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, 1);
   }
+}
+
+Vec3 getRandomXYZ(size_t max_x, size_t max_y, size_t max_z) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  std::uniform_int_distribution<int> distrib_x(0, static_cast<int>(max_x));
+  std::uniform_int_distribution<int> distrib_y(0, static_cast<int>(max_y));
+  std::uniform_int_distribution<int> distrib_z(0, static_cast<int>(max_z));
+
+  Vec3 random = {static_cast<float>(distrib_x(gen)),
+                 static_cast<float>(distrib_y(gen)),
+                 static_cast<float>(distrib_z(gen))};
+  return random;
 }
