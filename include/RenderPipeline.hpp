@@ -4,6 +4,8 @@
 
 #include <array>
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
 #include <string>
 
 constexpr size_t SHADER_INFO_LOG_SIZE = 512;
@@ -14,10 +16,11 @@ class RenderPipeline {
   RenderPipeline(RenderPipeline &&) = delete;
   RenderPipeline &operator=(const RenderPipeline &) = default;
   RenderPipeline &operator=(RenderPipeline &&) = delete;
-  explicit RenderPipeline(const std::array<float, 9> &vertices,
+  explicit RenderPipeline(const std::array<float, 24> &vertices,
                           const std::string &vertexShaderSource,
                           const std::string &fragmentShaderSource);
   ~RenderPipeline();
+  [[nodiscard]] GLuint getShaderProgram() const { return shaderProgram; }
 
   void draw() const;
 
@@ -32,3 +35,11 @@ class RenderPipeline {
   static GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
   void linkVertexAttributes();
 };
+
+// load Shader from filePath
+std::string loadShaderSource(const std::string &filePath) {
+  const std::ifstream file(filePath);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
+}
